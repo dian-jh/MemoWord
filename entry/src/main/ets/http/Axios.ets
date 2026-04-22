@@ -3,7 +3,7 @@ import promptAction from '@ohos.promptAction';
 
 //创建axios实例
 export const instance = axios.create({
-  baseURL: 'http://172.20.10.2:3000',
+  baseURL: 'https://6e2240a6-e101-48e6-8738-bc832e014521.mock.pstmn.io',
   timeout: 1000
 })
 
