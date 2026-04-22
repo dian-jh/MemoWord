@@ -1,0 +1,224 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\CSharp\\vs2026\\code\\MemoWord\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F45FA606-A27A-26A2-191A-3009CC18A689}|WordService.Domain\\WordService.Domain.csproj|e:\\csharp\\vs2026\\code\\memoword\\wordservice.domain\\studystatisticsdomainservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F45FA606-A27A-26A2-191A-3009CC18A689}|WordService.Domain\\WordService.Domain.csproj|solutionrelative:wordservice.domain\\studystatisticsdomainservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F45FA606-A27A-26A2-191A-3009CC18A689}|WordService.Domain\\WordService.Domain.csproj|e:\\csharp\\vs2026\\code\\memoword\\wordservice.domain\\worddomainservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F45FA606-A27A-26A2-191A-3009CC18A689}|WordService.Domain\\WordService.Domain.csproj|solutionrelative:wordservice.domain\\worddomainservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{19595667-FABD-CF4B-BF3D-2CF95AA4712A}|WordService.Infrastructure\\WordService.Infrastructure.csproj|e:\\csharp\\vs2026\\code\\memoword\\wordservice.infrastructure\\studystatisticsrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{19595667-FABD-CF4B-BF3D-2CF95AA4712A}|WordService.Infrastructure\\WordService.Infrastructure.csproj|solutionrelative:wordservice.infrastructure\\studystatisticsrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{19595667-FABD-CF4B-BF3D-2CF95AA4712A}|WordService.Infrastructure\\WordService.Infrastructure.csproj|e:\\csharp\\vs2026\\code\\memoword\\wordservice.infrastructure\\wordrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{19595667-FABD-CF4B-BF3D-2CF95AA4712A}|WordService.Infrastructure\\WordService.Infrastructure.csproj|solutionrelative:wordservice.infrastructure\\wordrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F45FA606-A27A-26A2-191A-3009CC18A689}|WordService.Domain\\WordService.Domain.csproj|e:\\csharp\\vs2026\\code\\memoword\\wordservice.domain\\iwordrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F45FA606-A27A-26A2-191A-3009CC18A689}|WordService.Domain\\WordService.Domain.csproj|solutionrelative:wordservice.domain\\iwordrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F45FA606-A27A-26A2-191A-3009CC18A689}|WordService.Domain\\WordService.Domain.csproj|e:\\csharp\\vs2026\\code\\memoword\\wordservice.domain\\istudystatisticsrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F45FA606-A27A-26A2-191A-3009CC18A689}|WordService.Domain\\WordService.Domain.csproj|solutionrelative:wordservice.domain\\istudystatisticsrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{19595667-FABD-CF4B-BF3D-2CF95AA4712A}|WordService.Infrastructure\\WordService.Infrastructure.csproj|e:\\csharp\\vs2026\\code\\memoword\\wordservice.infrastructure\\configs\\studystatisticsconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{19595667-FABD-CF4B-BF3D-2CF95AA4712A}|WordService.Infrastructure\\WordService.Infrastructure.csproj|solutionrelative:wordservice.infrastructure\\configs\\studystatisticsconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F45FA606-A27A-26A2-191A-3009CC18A689}|WordService.Domain\\WordService.Domain.csproj|e:\\csharp\\vs2026\\code\\memoword\\wordservice.domain\\entities\\studystatistics.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F45FA606-A27A-26A2-191A-3009CC18A689}|WordService.Domain\\WordService.Domain.csproj|solutionrelative:wordservice.domain\\entities\\studystatistics.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{19595667-FABD-CF4B-BF3D-2CF95AA4712A}|WordService.Infrastructure\\WordService.Infrastructure.csproj|e:\\csharp\\vs2026\\code\\memoword\\wordservice.infrastructure\\worddbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{19595667-FABD-CF4B-BF3D-2CF95AA4712A}|WordService.Infrastructure\\WordService.Infrastructure.csproj|solutionrelative:wordservice.infrastructure\\worddbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{19595667-FABD-CF4B-BF3D-2CF95AA4712A}|WordService.Infrastructure\\WordService.Infrastructure.csproj|e:\\csharp\\vs2026\\code\\memoword\\wordservice.infrastructure\\configs\\wordconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{19595667-FABD-CF4B-BF3D-2CF95AA4712A}|WordService.Infrastructure\\WordService.Infrastructure.csproj|solutionrelative:wordservice.infrastructure\\configs\\wordconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3EBC7461-FBE3-7295-D8CA-653469DF542B}|WordService.WebAPI\\WordService.WebAPI.csproj|e:\\csharp\\vs2026\\code\\memoword\\wordservice.webapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3EBC7461-FBE3-7295-D8CA-653469DF542B}|WordService.WebAPI\\WordService.WebAPI.csproj|solutionrelative:wordservice.webapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4F436C8A-E88F-4ADA-2B59-5E4A7E4B521F}|MemoWord.AppHost\\MemoWord.AppHost.csproj|e:\\csharp\\vs2026\\code\\memoword\\memoword.apphost\\apphost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F436C8A-E88F-4ADA-2B59-5E4A7E4B521F}|MemoWord.AppHost\\MemoWord.AppHost.csproj|solutionrelative:memoword.apphost\\apphost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 1256,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "StudyStatisticsDomainService.cs",
+              "DocumentMoniker": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Domain\\StudyStatisticsDomainService.cs",
+              "RelativeDocumentMoniker": "WordService.Domain\\StudyStatisticsDomainService.cs",
+              "ToolTip": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Domain\\StudyStatisticsDomainService.cs",
+              "RelativeToolTip": "WordService.Domain\\StudyStatisticsDomainService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T08:14:42.229Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "WordDomainService.cs",
+              "DocumentMoniker": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Domain\\WordDomainService.cs",
+              "RelativeDocumentMoniker": "WordService.Domain\\WordDomainService.cs",
+              "ToolTip": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Domain\\WordDomainService.cs",
+              "RelativeToolTip": "WordService.Domain\\WordDomainService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T08:06:44.843Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "StudyStatisticsRepository.cs",
+              "DocumentMoniker": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Infrastructure\\StudyStatisticsRepository.cs",
+              "RelativeDocumentMoniker": "WordService.Infrastructure\\StudyStatisticsRepository.cs",
+              "ToolTip": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Infrastructure\\StudyStatisticsRepository.cs",
+              "RelativeToolTip": "WordService.Infrastructure\\StudyStatisticsRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T08:15:02.101Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "WordRepository.cs",
+              "DocumentMoniker": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Infrastructure\\WordRepository.cs",
+              "RelativeDocumentMoniker": "WordService.Infrastructure\\WordRepository.cs",
+              "ToolTip": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Infrastructure\\WordRepository.cs",
+              "RelativeToolTip": "WordService.Infrastructure\\WordRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T08:07:23.274Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "IWordRepository.cs",
+              "DocumentMoniker": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Domain\\IWordRepository.cs",
+              "RelativeDocumentMoniker": "WordService.Domain\\IWordRepository.cs",
+              "ToolTip": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Domain\\IWordRepository.cs",
+              "RelativeToolTip": "WordService.Domain\\IWordRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T08:07:07.775Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "IStudyStatisticsRepository.cs",
+              "DocumentMoniker": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Domain\\IStudyStatisticsRepository.cs",
+              "RelativeDocumentMoniker": "WordService.Domain\\IStudyStatisticsRepository.cs",
+              "ToolTip": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Domain\\IStudyStatisticsRepository.cs",
+              "RelativeToolTip": "WordService.Domain\\IStudyStatisticsRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T08:14:25.26Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "StudyStatisticsConfiguration.cs",
+              "DocumentMoniker": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Infrastructure\\Configs\\StudyStatisticsConfiguration.cs",
+              "RelativeDocumentMoniker": "WordService.Infrastructure\\Configs\\StudyStatisticsConfiguration.cs",
+              "ToolTip": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Infrastructure\\Configs\\StudyStatisticsConfiguration.cs",
+              "RelativeToolTip": "WordService.Infrastructure\\Configs\\StudyStatisticsConfiguration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T08:11:57.453Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "StudyStatistics.cs",
+              "DocumentMoniker": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Domain\\Entities\\StudyStatistics.cs",
+              "RelativeDocumentMoniker": "WordService.Domain\\Entities\\StudyStatistics.cs",
+              "ToolTip": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Domain\\Entities\\StudyStatistics.cs",
+              "RelativeToolTip": "WordService.Domain\\Entities\\StudyStatistics.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAADwvx0AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T08:11:37.654Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.WebAPI\\Program.cs",
+              "RelativeDocumentMoniker": "WordService.WebAPI\\Program.cs",
+              "ToolTip": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.WebAPI\\Program.cs",
+              "RelativeToolTip": "WordService.WebAPI\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T08:02:08.743Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "AppHost.cs",
+              "DocumentMoniker": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord.AppHost\\AppHost.cs",
+              "RelativeDocumentMoniker": "MemoWord.AppHost\\AppHost.cs",
+              "ToolTip": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord.AppHost\\AppHost.cs",
+              "RelativeToolTip": "MemoWord.AppHost\\AppHost.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T07:50:32.416Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "WordConfiguration.cs",
+              "DocumentMoniker": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Infrastructure\\Configs\\WordConfiguration.cs",
+              "RelativeDocumentMoniker": "WordService.Infrastructure\\Configs\\WordConfiguration.cs",
+              "ToolTip": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Infrastructure\\Configs\\WordConfiguration.cs",
+              "RelativeToolTip": "WordService.Infrastructure\\Configs\\WordConfiguration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T07:44:36.528Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "WordDbContext.cs",
+              "DocumentMoniker": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Infrastructure\\WordDbContext.cs",
+              "RelativeDocumentMoniker": "WordService.Infrastructure\\WordDbContext.cs",
+              "ToolTip": "E:\\CSharp\\vs2026\\code\\MemoWord\\WordService.Infrastructure\\WordDbContext.cs",
+              "RelativeToolTip": "WordService.Infrastructure\\WordDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T07:40:28.278Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
