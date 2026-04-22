@@ -1,81 +1,187 @@
-import { instance } from "./Axios";
+import { AxiosResponse } from '@ohos/axios'
+import { instance } from './Axios'
 
-export interface ApiResponse<T> {
-  code: number;
-  message: string;
-  data: T;
+// ======================== 基础通用接口 ========================
+
+export interface HttpResult<T> {
+  code: number
+  message: string
+  data: T
 }
 
-//获取验证码
-export function sendCode(phone: string) {
-  return instance.get('/word/user/code', { params: { phone: phone } });
-}
-
-// 登录
-export function login(phone: string, code: string) {
-  return instance.post('/word/user/login', new LoginBean(phone, code));
-}
-
-//获取全部打卡列表
-export function getAllPost(page: number, size: number) {
-  return instance.get('/word/post/getAll', { params: { page: page, size: size } })
-}
-
-//点赞
-export function like(postId: number) {
-  return instance.get('/word/like/create', { params: { postId: postId } })
-}
-
-//取消点赞
-export function cancelLike(postId: number) {
-  return instance.get('/word/like/cancel', { params: { postId: postId } })
-}
-
-//获取登录用户信息
-export function info() {
-  return instance.get('/word/user/info')
-}
-
-//获取我的登录打卡记录
-export function getMyPost(page: number, size: number) {
-  return instance.get('/word/post/getMine', { params: { page: page, size: size } })
-}
+// ======================== 用户与帖子模块接口 (保持原有) ========================
 
 export interface PostCard {
-  rightCount: number;
-  answeredCount: number;
-  timeUsed: number;
+  rightCount: number
+  answeredCount: number
+  timeUsed: number
 }
 
-export function createPost(post: PostCard) {
-  return instance.post('/word/post/create', post)
+export interface PostRecord {
+  id: number
+  postText: string
+  rightCount: number
+  answeredCount: number
+  timeUsed: number
+  createTime: string
+  likeCount: number
+  nickname: string
+  avatarUrl: string
+  isLike: boolean
+}
+
+export interface UserProfile {
+  nickname: string
+  avatarUrl: string
+}
+
+export interface PostPageData {
+  records: PostRecord[]
+  total: number
 }
 
 class LoginBean {
-  phone: string;
-  code: string;
-
+  phone: string
+  code: string
   constructor(phone: string, code: string) {
-    this.phone = phone;
-    this.code = code;
+    this.phone = phone
+    this.code = code
   }
 }
 
-// 新加
-// 学习情况统计
-export function getStatisticsHistory() {
-  return instance.get<ApiResponse<DailyStatistics[]>>('/word/stat/getHistory')
+// ======================== 学习统计与单词模块 (严格类型定义) ========================
+
+// 完全对齐 C# 后端返回的单词实体
+export interface StudyWord {
+  id: number
+  wordContent: string
+  phoneticEn: string | null
+  phoneticUs: string | null
+  definition: string | null
+  translation: string | null
+  wordTags: string | null
+  wordExchanges: string | null
+  bncLevel: number
+  frqLevel: number
+  collinsLevel: number
+  oxfordLevel: number
+  exampleSentences: string | null
 }
 
-export interface DailyStatistics {
-  learnedCount: number;
-  timeUsed: number;
-  targetCount: number;
-  statDate?: string;     // 这里的问号保留，因为上传时可能不需要日期
-  id?: string;           // 对应你 Model 里的 id
-  userId?: string;       // 对应你 Model 里的 userId
+// 完全对齐 C# 返回的历史记录 DTO
+export interface DailyStudyRecordDto {
+  date: string
+  learnedCount: number
+  targetCount: number
+  studyDuration: number
 }
 
-export function updateDailyStatistics(stats: DailyStatistics) {
-  return instance.post<ApiResponse<null>>('/word/stat/update', stats);
+// 【核心修复】：将请求参数定义为 Class，以满足 ArkTS 对对象字面量的严格限制
+export class SetTodayTargetRequest {
+  targetCount: number
+  constructor(targetCount: number) {
+    this.targetCount = targetCount
+  }
+}
+
+export class SetTodayLearnedCountRequest {
+  learnedCount: number
+  constructor(learnedCount: number) {
+    this.learnedCount = learnedCount
+  }
+}
+
+export class SetTodayStudyDurationRequest {
+  duration: number
+  constructor(duration: number) {
+    this.duration = duration
+  }
+}
+
+// ======================== API 请求方法 ========================
+
+// --- 用户与帖子 API (保持原有) ---
+export function sendCode(phone: string): Promise<AxiosResponse<HttpResult<string>>> {
+  return instance.get('/word/user/code', { params: { phone: phone } })
+}
+
+export function login(phone: string, code: string): Promise<AxiosResponse<HttpResult<string>>> {
+  return instance.post('/word/user/login', new LoginBean(phone, code))
+}
+
+export function getAllPost(page: number, size: number): Promise<AxiosResponse<HttpResult<PostPageData>>> {
+  return instance.get('/word/post/getAll', { params: { page: page, size: size } })
+}
+
+export function like(postId: number): Promise<AxiosResponse<HttpResult<boolean>>> {
+  return instance.get('/word/like/create', { params: { postId: postId } })
+}
+
+export function cancelLike(postId: number): Promise<AxiosResponse<HttpResult<boolean>>> {
+  return instance.get('/word/like/cancel', { params: { postId: postId } })
+}
+
+export function info(): Promise<AxiosResponse<HttpResult<UserProfile>>> {
+  return instance.get('/word/user/info')
+}
+
+export function getMyPost(page: number, size: number): Promise<AxiosResponse<HttpResult<PostPageData>>> {
+  return instance.get('/word/post/getMine', { params: { page: page, size: size } })
+}
+
+export function createPost(post: PostCard): Promise<AxiosResponse<HttpResult<boolean>>> {
+  return instance.post('/word/post/create', post)
+}
+
+
+// --- 学习统计 API (全新极简强类型版本) ---
+
+// 1. 获取今日目标
+export async function getTodayTargetCount(): Promise<number> {
+  const response: AxiosResponse<HttpResult<number>> = await instance.get('/word/study/target/today')
+  return response.data.data
+}
+
+// 2. 设置今日目标
+export async function setTodayTargetCount(targetCount: number): Promise<void> {
+  const payload = new SetTodayTargetRequest(targetCount)
+  await instance.post('/word/study/target/today', payload)
+}
+
+// 3. 获取今日已学单词数
+export async function getTodayLearnedCount(): Promise<number> {
+  const response: AxiosResponse<HttpResult<number>> = await instance.get('/word/study/learned/today')
+  return response.data.data
+}
+
+// 4. 设置今日已学单词数
+export async function setTodayLearnedCount(learnedCount: number): Promise<void> {
+  const payload = new SetTodayLearnedCountRequest(learnedCount)
+  await instance.post('/word/study/learned/today', payload)
+}
+
+// 5. 获取今日学习时长 (分钟)
+export async function getTodayStudyDuration(): Promise<number> {
+  const response: AxiosResponse<HttpResult<number>> = await instance.get('/word/study/duration/today')
+  return response.data.data
+}
+
+// 6. 设置今日学习时长 (分钟)
+export async function setTodayStudyDuration(duration: number): Promise<void> {
+  const payload = new SetTodayStudyDurationRequest(duration)
+  await instance.post('/word/study/duration/today', payload)
+}
+
+// 7. 获取用户学习历史记录
+export async function getLearnedHistory(): Promise<DailyStudyRecordDto[]> {
+  const response: AxiosResponse<HttpResult<DailyStudyRecordDto[]>> = await instance.get('/word/study/learned/history')
+  return response.data.data
+}
+
+// 8. 获取今日单词队列
+export async function getTodayWordQueue(count: number): Promise<StudyWord[]> {
+  const response: AxiosResponse<HttpResult<StudyWord[]>> = await instance.get('/word/study/today/words', {
+    params: { count: count }
+  })
+  return response.data.data
 }
