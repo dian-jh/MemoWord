@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/WordService/">
+    <Project Path="WordService.Domain/WordService.Domain.csproj" />
+    <Project Path="WordService.Infrastructure/WordService.Infrastructure.csproj" />
+    <Project Path="WordService.WebAPI/WordService.WebAPI.csproj" />
+  </Folder>
+  <Project Path="MemoWord.AppHost/MemoWord.AppHost.csproj" />
+  <Project Path="MemoWord.ServiceDefaults/MemoWord.ServiceDefaults.csproj" />
+</Solution>
