@@ -97,6 +97,7 @@ public class StudyController : ControllerBase
     [HttpGet("learned/history")]
     public async Task<ActionResult<HttpResult<IReadOnlyList<DailyStudyRecordDto>>>> GetLearnedHistoryAsync(CancellationToken cancellationToken)
     {
+        
         if (!TryGetUserId(out var userId))
         {
             return Unauthorized(HttpResult<IReadOnlyList<DailyStudyRecordDto>>.Fail("Unauthorized"));

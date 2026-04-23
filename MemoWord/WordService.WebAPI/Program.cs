@@ -38,6 +38,8 @@ builder.Services.AddOpenApi();
 builder.AddDefaultOpenApi();
 
 var app = builder.Build();
+//强制监听所有网卡上的 5195 端口
+//app.Urls.Add("http://0.0.0.0:5195");
 
 app.MapDefaultEndpoints();
 

@@ -1,6 +1,6 @@
 import { promptAction, router } from '@kit.ArkUI';
 // 【修改】：只引入 getLearnedHistory 和 setTodayTargetCount
-import { getLearnedHistory, setTodayTargetCount } from '../http/Api';
+import { getLearnedHistory, setTodayTargetCount,getTodayTargetCount } from '../http/Api';
 import { StorageKeys } from '../store/GlobalState';
 import { StudyStatistics } from '../model/StudyStatistics';
 

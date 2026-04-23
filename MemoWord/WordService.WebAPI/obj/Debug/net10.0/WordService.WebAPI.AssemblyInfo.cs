@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WordService.WebAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+160997b4bf757eee5f76545006269e8076c8bc05")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+150c6554994581f782a4a18954f9f8ac71bfca2f")]
 [assembly: System.Reflection.AssemblyProductAttribute("WordService.WebAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WordService.WebAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
