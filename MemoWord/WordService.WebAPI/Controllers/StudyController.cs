@@ -1,9 +1,12 @@
-using System.Security.Claims;
+using Elastic.Clients.Elasticsearch;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WordService.Domain;
 using WordService.Domain.Entities;
+using WordService.Domain.Models;
+using WordService.Infrastructure;
 
 namespace WordService.WebAPI.Controllers;
 
@@ -13,13 +16,20 @@ public class StudyController : ControllerBase
 {
     private readonly StudyStatisticsDomainService _studyStatisticsDomainService;
     private readonly WordDomainService _wordDomainService;
+    private readonly IWordRepository _wordRepository;
+    private readonly ElasticsearchClient _elasticClient;
 
     public StudyController(
         StudyStatisticsDomainService studyStatisticsDomainService,
-        WordDomainService wordDomainService)
+        WordDomainService wordDomainService,
+        IWordRepository wordRepository,
+        ElasticsearchClient elasticsearchClient
+        )
     {
         _studyStatisticsDomainService = studyStatisticsDomainService;
         _wordDomainService = wordDomainService;
+        _wordRepository = wordRepository;
+        _elasticClient = elasticsearchClient;
     }
 
     [HttpGet("target/today")]
@@ -118,10 +128,79 @@ public class StudyController : ControllerBase
     }
 
     [HttpGet("today/words")]
-    public async Task<ActionResult<HttpResult<IReadOnlyList<Word>>>> GetTodayWordQueueAsync([FromQuery][Range(1, int.MaxValue)] int count, CancellationToken cancellationToken)
+    public async Task<ActionResult<HttpResult<List<WordWithFavoriteModel>>>> GetTodayWordQueueAsync(int count, CancellationToken ct)
     {
-        var words = await _wordDomainService.GetRandomWordsAsync(count, cancellationToken);
-        return Ok(HttpResult<IReadOnlyList<Word>>.Success(words));
+        if (!TryGetUserId(out var userId)) return Unauthorized();
+
+        var results = await _wordDomainService.GetTodayWordsWithStatusAsync(userId, count, ct);
+        return Ok(HttpResult<List<WordWithFavoriteModel>>.Success(results));
+    }
+
+    [HttpGet("search")]
+    public async Task<ActionResult<HttpResult<IReadOnlyList<SearchWordResultDto>>>> SearchWordsAsync([FromQuery] string keyword, CancellationToken cancellationToken)
+    {
+        // 调用 DomainService 进行搜索，限制最大返回 10 条
+        var words = await _wordDomainService.SearchWordsAsync(keyword, 10, cancellationToken);
+
+        // 映射为轻量级 DTO 返回给前端
+        var resultList = words.Select(w => new SearchWordResultDto
+        {
+            Id = w.Id,
+            WordContent = w.WordContent,
+            PhoneticUs = w.PhoneticUs,
+            Translation = w.Translation
+        }).ToList();
+
+        return Ok(HttpResult<IReadOnlyList<SearchWordResultDto>>.Success(resultList));
+    }
+
+    [HttpGet("detail/{wordId}")]
+    public async Task<ActionResult<HttpResult<WordWithFavoriteModel>>> GetWordDetailAsync(int wordId, CancellationToken ct)
+    {
+        if (!TryGetUserId(out var userId)) return Unauthorized();
+
+        var result = await _wordDomainService.GetWordDetailWithFavoriteAsync(userId, wordId, ct);
+
+        if (result == null) return NotFound(HttpResult<WordWithFavoriteModel>.Fail("单词不存在"));
+
+        return Ok(HttpResult<WordWithFavoriteModel>.Success(result));
+    }
+
+    [HttpPost("admin/sync-to-es")]
+    public async Task<IActionResult> SyncAllWordsToElasticsearch(CancellationToken cancellationToken)
+    {
+        var allWords = await _wordRepository.GetAllWordsForSyncAsync(cancellationToken);
+        if (!allWords.Any()) return Ok("MySQL 中没有单词可以同步。");
+
+        // 极度轻量的 DTO 映射
+        var esDocuments = allWords.Select(w => new WordElasticDocument
+        {
+            WordId = w.Id,
+            WordContent = w.WordContent,
+            PhoneticUs = w.PhoneticUs,
+            Translation = w.Translation
+        }).ToList();
+
+        int batchSize = 5000;
+        int successCount = 0;
+
+        for (int i = 0; i < esDocuments.Count; i += batchSize)
+        {
+            var batch = esDocuments.Skip(i).Take(batchSize).ToList();
+            var response = await _elasticClient.IndexManyAsync(batch, "words", cancellationToken);
+
+            if (response.IsValidResponse)
+            {
+                successCount += batch.Count;
+            }
+            else
+            {
+                Console.WriteLine($"[ES Sync 错误] {response.DebugInformation}");
+                return StatusCode(500, "同步失败，请查看控制台日志。");
+            }
+        }
+
+        return Ok(HttpResult<bool>.Success(true, $"极简模式同步完成！共 {successCount} 个单词。"));
     }
 
     private bool TryGetUserId(out Guid userId)
@@ -142,6 +221,7 @@ public class StudyController : ControllerBase
 
         return Guid.TryParse(rawUserId, out userId);
     }
+
 }
 
 public sealed class SetTodayTargetRequest
@@ -171,6 +251,14 @@ public sealed class DailyStudyRecordDto
     public int TargetCount { get; init; }
 
     public int StudyDuration { get; init; }
+}
+
+public sealed class SearchWordResultDto
+{
+    public int Id { get; init; }
+    public string WordContent { get; init; } = string.Empty;
+    public string? PhoneticUs { get; init; }
+    public string? Translation { get; init; }
 }
 
 public sealed class HttpResult<T>

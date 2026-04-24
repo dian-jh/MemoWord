@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "F1dOSEXxPAo=",
+  "dgSpecHash": "nIfgS2Z1eL0=",
   "success": true,
   "projectFilePath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\WordService.WebAPI\\WordService.WebAPI.csproj",
   "expectedPackageFiles": [
+    "D:\\AppData\\Developer\\NuGet\\elastic.clients.elasticsearch\\8.12.1\\elastic.clients.elasticsearch.8.12.1.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\elastic.transport\\0.4.18\\elastic.transport.0.4.18.nupkg.sha512",
     "D:\\AppData\\Developer\\NuGet\\microsoft.aspnetcore.openapi\\10.0.6\\microsoft.aspnetcore.openapi.10.0.6.nupkg.sha512",
     "D:\\AppData\\Developer\\NuGet\\microsoft.entityframeworkcore\\9.0.0\\microsoft.entityframeworkcore.9.0.0.nupkg.sha512",
     "D:\\AppData\\Developer\\NuGet\\microsoft.entityframeworkcore.abstractions\\9.0.0\\microsoft.entityframeworkcore.abstractions.9.0.0.nupkg.sha512",

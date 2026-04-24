@@ -7,13 +7,86 @@
   },
   "servers": [
     {
-      "url": "https://[::]:61527"
+      "url": "https://[::]:51574"
     },
     {
-      "url": "http://[::]:61529"
+      "url": "http://[::]:51575"
     }
   ],
   "paths": {
+    "/word/favorite/toggle/{wordId}": {
+      "post": {
+        "tags": [
+          "Favorite"
+        ],
+        "parameters": [
+          {
+            "name": "wordId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfboolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfboolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfboolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/word/favorite/list": {
+      "get": {
+        "tags": [
+          "Favorite"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfListOfFavoriteWordModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfListOfFavoriteWordModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfListOfFavoriteWordModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/word/study/target/today": {
       "get": {
         "tags": [
@@ -281,8 +354,6 @@
             "name": "count",
             "in": "query",
             "schema": {
-              "maximum": 2147483647,
-              "minimum": 1,
               "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": [
                 "integer",
@@ -298,20 +369,114 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/HttpResultOfIReadOnlyListOfWord"
+                  "$ref": "#/components/schemas/HttpResultOfListOfWordWithFavoriteModel"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HttpResultOfIReadOnlyListOfWord"
+                  "$ref": "#/components/schemas/HttpResultOfListOfWordWithFavoriteModel"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HttpResultOfIReadOnlyListOfWord"
+                  "$ref": "#/components/schemas/HttpResultOfListOfWordWithFavoriteModel"
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/word/study/search": {
+      "get": {
+        "tags": [
+          "Study"
+        ],
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfIReadOnlyListOfSearchWordResultDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfIReadOnlyListOfSearchWordResultDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfIReadOnlyListOfSearchWordResultDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/word/study/detail/{wordId}": {
+      "get": {
+        "tags": [
+          "Study"
+        ],
+        "parameters": [
+          {
+            "name": "wordId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfWordWithFavoriteModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfWordWithFavoriteModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfWordWithFavoriteModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/word/study/admin/sync-to-es": {
+      "post": {
+        "tags": [
+          "Study"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -348,6 +513,50 @@
               "string"
             ],
             "format": "int32"
+          }
+        }
+      },
+      "FavoriteWordModel": {
+        "type": "object",
+        "properties": {
+          "wordId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "wordContent": {
+            "type": "string"
+          },
+          "phoneticUs": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "translation": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "wordExchanges": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "exampleSentences": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -419,7 +628,7 @@
           }
         }
       },
-      "HttpResultOfIReadOnlyListOfWord": {
+      "HttpResultOfIReadOnlyListOfSearchWordResultDto": {
         "type": "object",
         "properties": {
           "code": {
@@ -439,8 +648,112 @@
               "array"
             ],
             "items": {
-              "$ref": "#/components/schemas/Word"
+              "$ref": "#/components/schemas/SearchWordResultDto"
             }
+          }
+        }
+      },
+      "HttpResultOfListOfFavoriteWordModel": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/FavoriteWordModel"
+            }
+          }
+        }
+      },
+      "HttpResultOfListOfWordWithFavoriteModel": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/WordWithFavoriteModel"
+            }
+          }
+        }
+      },
+      "HttpResultOfWordWithFavoriteModel": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/WordWithFavoriteModel"
+              }
+            ]
+          }
+        }
+      },
+      "SearchWordResultDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "wordContent": {
+            "type": "string"
+          },
+          "phoneticUs": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "translation": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -490,9 +803,6 @@
         }
       },
       "Word": {
-        "required": [
-          "id"
-        ],
         "type": "object",
         "properties": {
           "id": {
@@ -581,6 +891,17 @@
             ]
           }
         }
+      },
+      "WordWithFavoriteModel": {
+        "type": "object",
+        "properties": {
+          "word": {
+            "$ref": "#/components/schemas/Word"
+          },
+          "isFavorite": {
+            "type": "boolean"
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -606,6 +927,9 @@
     }
   },
   "tags": [
+    {
+      "name": "Favorite"
+    },
     {
       "name": "Study"
     }

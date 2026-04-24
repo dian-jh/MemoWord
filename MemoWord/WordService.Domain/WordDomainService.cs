@@ -1,14 +1,74 @@
 using WordService.Domain.Entities;
+using WordService.Domain.Models;
 
 namespace WordService.Domain;
 
 public class WordDomainService
 {
     private readonly IWordRepository _wordRepository;
+    private readonly IWordSearchRepository _wordSearchRepository;
+    private readonly IFavoriteRepository _favoriteRepository;
 
-    public WordDomainService(IWordRepository wordRepository)
+    public WordDomainService(IWordRepository wordRepository,
+        IWordSearchRepository wordSearchRepository,
+        IFavoriteRepository favoriteRepository)
     {
         _wordRepository = wordRepository;
+        _wordSearchRepository = wordSearchRepository;
+        _favoriteRepository = favoriteRepository;
+    }
+
+    /// <summary>
+    /// 【列表搜索】：走 Elasticsearch (仅包含基础 4 个字段)
+    /// </summary>
+    public async Task<IReadOnlyList<Word>> SearchWordsAsync(string keyword, int limit = 15, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(keyword)) return Array.Empty<Word>();
+
+        var cleanKeyword = keyword.Trim().ToLowerInvariant();
+        return await _wordSearchRepository.SearchWordsAsync(cleanKeyword, limit, cancellationToken);
+    }
+
+    /// <summary>
+    /// 【单词详情】：走 MySQL，根据 ID 查询包含例句在内的完整 13 个字段
+    /// </summary>
+    public async Task<Word?> GetWordDetailAsync(int wordId, CancellationToken cancellationToken = default)
+    {
+        if (wordId <= 0) return null;
+
+        // 直接调用 MySQL 仓储，获取完全体数据
+        return await _wordRepository.GetWordByIdAsync(wordId, cancellationToken);
+    }
+
+    public async Task<WordWithFavoriteModel?> GetWordDetailWithFavoriteAsync(Guid userId, int wordId, CancellationToken ct)
+    {
+        // 1. 获取单词信息
+        var word = await _wordRepository.GetWordByIdAsync(wordId, ct);
+        if (word == null) return null;
+
+        // 2. 检查收藏状态
+        var isFavorite = await _favoriteRepository.IsFavoriteAsync(userId, wordId, ct);
+
+        return new WordWithFavoriteModel { Word = word, IsFavorite = isFavorite };
+    }
+
+    public async Task<List<WordWithFavoriteModel>> GetTodayWordsWithStatusAsync(Guid userId, int count, CancellationToken ct)
+    {
+        // 1. 获取随机单词列表（复用你现有的逻辑）
+        var words = await GetRandomWordsAsync(count, ct);
+        if (!words.Any()) return [];
+
+        // 2. 获取这些单词中，当前用户已收藏的 ID 集合
+        var wordIds = words.Select(w => w.Id).ToList();
+
+        var favoriteIds = await _favoriteRepository.GetFavoriteIdsFromListAsync(userId, wordIds, ct);
+
+        // 3. 组装结果
+        return words.Select(w => new WordWithFavoriteModel
+        {
+            Word = w,
+            IsFavorite = favoriteIds.Contains(w.Id)
+        }).ToList();
     }
 
     public async Task<IReadOnlyList<Word>> GetRandomWordsAsync(int count, CancellationToken cancellationToken = default)

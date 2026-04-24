@@ -1,3 +1,4 @@
+using Elastic.Clients.Elasticsearch;
 using MemoWord.ServiceDefaults;
 using Microsoft.EntityFrameworkCore;
 using WordService.Domain;
@@ -17,6 +18,22 @@ builder.Services.AddCors(options =>
     });
 });
 
+var esConnectionString = builder.Configuration.GetConnectionString("elasticsearch");
+
+if (string.IsNullOrEmpty(esConnectionString))
+{
+    // 如果找不到，给一个默认值防止启动崩溃（仅限开发环境）
+    esConnectionString = "http://localhost:9200";
+}
+
+// 2. 使用读取到的地址创建设置
+var esSettings = new ElasticsearchClientSettings(new Uri(esConnectionString))
+    .DefaultIndex("words")
+    .EnableDebugMode();
+
+// 3. 注册单例
+builder.Services.AddSingleton<ElasticsearchClient>(new ElasticsearchClient(esSettings));
+
 // Add services to the container.
 
 builder.Services.AddDbContext<WordDbContext>(options =>
@@ -30,6 +47,8 @@ builder.Services.AddDbContext<WordDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddScoped<IWordRepository, WordRepository>();
 builder.Services.AddScoped<IStudyStatisticsRepository, StudyStatisticsRepository>();
+builder.Services.AddScoped<IWordSearchRepository, ElasticWordSearchRepository>();
+builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
 builder.Services.AddScoped<WordDomainService>();
 builder.Services.AddScoped<StudyStatisticsDomainService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

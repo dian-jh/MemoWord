@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Transactions;
 
 namespace WordService.Domain.Entities;
 
@@ -27,5 +28,13 @@ public class Word
     {
         Id = id;
         WordContent = content;
+    }
+
+    public Word(int WordId, string WordContent, string? PhoneticUs, string? Translation)
+    {
+        this.Id = WordId;
+        this.WordContent = WordContent;
+        this.PhoneticUs = PhoneticUs;
+        this.Translation = Translation;
     }
 }
