@@ -1,33 +1,24 @@
 import { promptAction, router } from '@kit.ArkUI';
-// 【修改】：只引入 getLearnedHistory 和 setTodayTargetCount
-import { getLearnedHistory, setTodayTargetCount,getTodayTargetCount } from '../http/Api';
-import { StorageKeys } from '../store/GlobalState';
-import { StudyStatistics } from '../model/StudyStatistics';
-
+import { getLearnedHistory, setTodayTargetCount } from '../http/Api';
 
 @Entry
 @Component
 export struct StudyIndexPage {
-  @StorageLink(StorageKeys.STATISTICS_LIST) statisticsList: StudyStatistics[] = [];
-  @StorageLink(StorageKeys.TOTAL_GOAL) todayTarget: number = 0;
-  @StorageLink(StorageKeys.TODAY_LEARNED) learnedCount: number = 0;
-  @StorageLink(StorageKeys.TODAY_TIME) studyDuration: number = 0;
-  @StorageLink(StorageKeys.IS_DATA_READY) isDataReady: boolean = false;
-
+  @State todayTarget: number = 0;
+  @State learnedCount: number = 0;
+  @State studyDuration: number = 0; // 分钟
   @State isLoading: boolean = true;
 
   @StorageLink('currentTabIndex') currentTabIndex: number = 0;
-
   @Watch('onRefreshSignal') @StorageLink('refreshFlag') refreshFlag: number = 0;
 
-  // 目标设置弹窗
   targetDialogController: CustomDialogController = new CustomDialogController({
     builder: TargetSettingDialog({
+      // 把当前已学数量传给弹窗，方便做提示
+      currentLearned: this.learnedCount,
       onSubmit: async (target: number): Promise<boolean> => {
-        // 先更新本地全局状态，让 UI 瞬间变化
-        this.todayTarget = target;
-        // 同步后端
         await setTodayTargetCount(target);
+        this.refreshData();
         return true;
       }
     }),
@@ -35,83 +26,63 @@ export struct StudyIndexPage {
     customStyle: true
   })
 
-  // 【核心修改 1】：首次挂载到屏幕时触发（代替第一次的 onPageShow）
   aboutToAppear(): void {
     this.refreshData();
   }
 
-  // 【核心修改 2】：当监听到 Index 页面传来 onPageShow 的信号时触发
   onRefreshSignal(): void {
-    // 严谨判断：只有当前用户停留在“单词”这个 Tab（索引0）时，才发网络请求
     if (this.currentTabIndex === 0) {
       this.refreshData();
     }
   }
 
-  // 每次页面显示时刷新数据（包括从练习页返回时）
-  onPageShow(): void {
-    this.refreshData();
-  }
-
   private async refreshData(): Promise<void> {
     this.isLoading = true;
     try {
-      // 1. 发起网络请求
       const historyList = await getLearnedHistory();
 
       const now = new Date();
-      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const todayStr = `${year}-${month}-${day}`;
 
-      // 3. 更新全局统计列表（这是统计页图表的数据源）
-      if (historyList && historyList.length > 0) {
-        this.statisticsList = historyList.map((item): StudyStatistics => {
-          return new StudyStatistics("", "", item.date, item.learnedCount, item.targetCount, item.studyDuration);
-        });
-      } else {
-        this.statisticsList = [];
-      }
-
-      // 在历史记录数组中，找到属于今天的记录
       const todayRecord = historyList.find(record => record.date === todayStr);
 
-
       if (todayRecord) {
-        // 如果找到了今天的记录，直接赋值（使用 Number 防御性转换，以防 JSON 解析偏差）
         this.todayTarget = Number(todayRecord.targetCount) || 0;
         this.learnedCount = Number(todayRecord.learnedCount) || 0;
         this.studyDuration = Number(todayRecord.studyDuration) || 0;
       } else {
-        // 如果没找到，说明今天还没开始学，一切归零
         this.todayTarget = 0;
         this.learnedCount = 0;
         this.studyDuration = 0;
       }
 
-      // 5. 标记全局数据已就绪，StatisticsPage 看到这个标志就不会再发请求了
-      this.isDataReady = true;
-
-      // 如果还没设定目标，主动弹窗
       if (this.todayTarget <= 0) {
         this.targetDialogController.open();
       }
     } catch (e) {
       console.error('StudyIndex_Debug', '刷新看板数据失败', JSON.stringify(e));
-      // 失败也要结束 loading
-      this.isDataReady = true;
     }
     this.isLoading = false;
   }
 
+  // 动态获取按钮文本
+  private getButtonText(): string {
+    if (this.todayTarget <= 0) return '设定学习目标';
+    if (this.learnedCount >= this.todayTarget) return '再来一组吧！';
+    return '开始背单词吧！';
+  }
+
   build() {
     Column() {
-      // 头部标题
       Text('学习概览')
         .fontSize(24)
         .fontWeight(FontWeight.Bold)
         .fontColor('#FFFFFF')
         .margin({ top: 40, bottom: 30 })
 
-      // 中心进度圆环
       Stack() {
         DataPanel({
           values: [this.learnedCount],
@@ -133,7 +104,6 @@ export struct StudyIndexPage {
       }
       .margin({ bottom: 40 })
 
-      // 学习时长卡片
       Row() {
         Column({ space: 8 }) {
           Text('今日学习时长')
@@ -155,8 +125,7 @@ export struct StudyIndexPage {
 
       Blank()
 
-      // 开始按钮
-      Button('开始背单词吧！')
+      Button(this.getButtonText())
         .width('80%')
         .height(60)
         .fontSize(20)
@@ -165,11 +134,13 @@ export struct StudyIndexPage {
         .borderRadius(30)
         .margin({ bottom: 50 })
         .onClick(() => {
-          // 如果目标设定好了，跳转去背单词；如果还没设，拦住他去设目标
-          if (this.todayTarget > 0) {
-            router.pushUrl({ url: 'pages/PracticePage' })
-          } else {
+          // 【核心逻辑分发】
+          if (this.todayTarget <= 0 || this.learnedCount >= this.todayTarget) {
+            // 如果没设目标，或者目标已完成（想再来一组），都打开弹窗修改目标
             this.targetDialogController.open()
+          } else {
+            // 目标未完成，正常去背单词
+            router.pushUrl({ url: 'pages/PracticePage' })
           }
         })
     }
@@ -180,12 +151,15 @@ export struct StudyIndexPage {
 }
 
 // ======================== 弹窗组件 ========================
+// 必须定义在同一个文件里，并被上面的 Controller 引用
 
 @CustomDialog
 struct TargetSettingDialog {
-  onSubmit: (target: number) => Promise<boolean> = async () => false
-  @State inputValue: string = ''
-  @State isSubmitting: boolean = false
+  currentLearned: number = 0; // 接收外部传来的已学数量
+  onSubmit: (target: number) => Promise<boolean> = async () => false;
+
+  @State inputValue: string = '';
+  @State isSubmitting: boolean = false;
   controller: CustomDialogController = new CustomDialogController({ builder: TargetSettingDialog() })
 
   build() {
@@ -195,7 +169,14 @@ struct TargetSettingDialog {
         .fontWeight(FontWeight.Bold)
         .fontColor('#FFFFFF')
 
-      TextInput({ text: this.inputValue, placeholder: '请输入每日学习单词数量' })
+      // 友好提示，防止用户在“再来一组”时输入比已学还小的数字
+      if (this.currentLearned > 0) {
+        Text(`您今日已学 ${this.currentLearned} 词，新目标需大于此数值`)
+          .fontSize(12)
+          .fontColor('#1FBE93')
+      }
+
+      TextInput({ text: this.inputValue, placeholder: '请输入总目标单词数量' })
         .type(InputType.Number)
         .fontSize(16)
         .fontColor('#FFFFFF')
@@ -216,12 +197,22 @@ struct TargetSettingDialog {
         .shadow({ radius: 8, color: '#1FBE9333', offsetX: 0, offsetY: 4 })
         .onClick(async () => {
           const count = parseInt(this.inputValue, 10)
+
           if (isNaN(count) || count <= 0) {
             promptAction.showToast({ message: '请输入大于0的数字' })
             return
           }
+
+          if (count <= this.currentLearned && this.currentLearned > 0) {
+            promptAction.showToast({ message: `新目标必须大于已学的 ${this.currentLearned} 词` })
+            return
+          }
+
           this.isSubmitting = true
-          if (await this.onSubmit(count)) this.controller.close()
+          if (await this.onSubmit(count)) {
+            this.inputValue = ''; // 清空输入框
+            this.controller.close()
+          }
           this.isSubmitting = false
         })
     }

@@ -67,3 +67,5 @@ E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\Wor
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.genruntimeconfig.cache
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\ref\WordService.WebAPI.dll
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\Elastic.Clients.Elasticsearch.dll
+E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\Elastic.Transport.dll

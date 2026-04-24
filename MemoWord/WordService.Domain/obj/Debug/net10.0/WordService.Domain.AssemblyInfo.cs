@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WordService.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+160997b4bf757eee5f76545006269e8076c8bc05")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6f5d97c345797e01fab04b95d0acdbd9a4bde0af")]
 [assembly: System.Reflection.AssemblyProductAttribute("WordService.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WordService.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

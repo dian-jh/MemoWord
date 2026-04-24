@@ -1,5 +1,5 @@
-import { AxiosResponse } from '@ohos/axios'
 import { instance } from './Axios'
+import { AxiosResponse, AxiosRequestConfig } from '@ohos/axios'
 
 // ======================== 基础通用接口 ========================
 
@@ -97,6 +97,37 @@ export class SetTodayStudyDurationRequest {
     this.duration = duration
   }
 }
+
+// ======================== 搜索模块 ========================
+
+export interface SearchWordResult {
+  wordId: number
+  wordContent: string
+  phoneticUs: string | null
+  translation: string | null
+}
+
+// ======================== 收藏模块模型 ========================
+
+// 11. 带有收藏状态的单词包装对象 (用于详情页和今日复习队列)
+export interface WordWithFavorite {
+  word: StudyWord
+  isFavorite: boolean
+}
+
+// 12. 收藏夹列表模型 (对应后端的 FavoriteWordModel)
+export interface FavoriteWord {
+  wordId: number
+  wordContent: string
+  phoneticUs: string | null
+  translation: string | null
+  wordExchanges: string | null
+  exampleSentences: string | null
+  createTime: string
+  // 👇 前端特有辅助字段：用于在 UI 上即时切换状态
+  isFavorite: boolean
+}
+
 
 // ======================== API 请求方法 ========================
 
@@ -196,10 +227,66 @@ export async function getLearnedHistory(): Promise<DailyStudyRecordDto[]> {
   return response.data.data
 }
 
-// 8. 获取今日单词队列
-export async function getTodayWordQueue(count: number): Promise<StudyWord[]> {
-  const response: AxiosResponse<HttpResult<StudyWord[]>> = await instance.get('/word/study/today/words', {
+// 8. 获取今日单词队列 (更新版：返回带收藏状态的包装对象)
+export async function getTodayWordQueue(count: number): Promise<WordWithFavorite[]> {
+  const response: AxiosResponse<HttpResult<WordWithFavorite[]>> = await instance.get('/word/study/today/words', {
     params: { count: count }
   })
   return response.data.data
+}
+
+// 9. 【极速搜索】边输边搜接口
+export async function searchWords(keyword: string, config?: AxiosRequestConfig): Promise<SearchWordResult[]> {
+  // ArkTS 严格模式下的对象合并方案：不使用 ... 展开符
+  let requestConfig: AxiosRequestConfig;
+
+  if (config) {
+    requestConfig = config;
+    // 如果外部传入了 config（比如带了 cancelToken），我们把 params 追加进去
+    requestConfig.params = { keyword: keyword };
+  } else {
+    // 如果外部没有传 config，我们自己建一个包含 params 的配置
+    requestConfig = {
+      params: { keyword: keyword }
+    };
+  }
+
+  const response: AxiosResponse<HttpResult<SearchWordResult[]>> = await instance.get(
+    '/word/study/search',
+    requestConfig
+  );
+
+  return response.data.data || [];
+}
+
+// 10. 获取单词详情 (更新版：返回带收藏状态的包装对象)
+export async function getWordDetail(wordId: number): Promise<WordWithFavorite | null> {
+  try {
+    const response: AxiosResponse<HttpResult<WordWithFavorite>> = await instance.get(`/word/study/detail/${wordId}`)
+    return response.data.data
+  } catch (err) {
+    console.error('MemoWord_Debug', `[API] 获取单词详情失败: ${wordId}`)
+    return null
+  }
+}
+
+
+// 11. 收藏/取消收藏切换
+// 返回值 boolean 代表操作后的最新状态 (true: 已收藏, false: 未收藏)
+export async function toggleFavorite(wordId: number): Promise<boolean> {
+  const response: AxiosResponse<HttpResult<boolean>> = await instance.post(`/word/favorite/toggle/${wordId}`)
+  return response.data.data
+}
+
+// 12. 获取收藏夹列表
+export async function getFavoriteList(): Promise<FavoriteWord[]> {
+  const response: AxiosResponse<HttpResult<FavoriteWord[]>> = await instance.get('/word/favorite/list')
+
+  // 核心逻辑：给后端返回的数据手动注入 isFavorite = true
+  // 这样你在 UI 上点击“红心”取消时，直接修改这个字段即可
+  const list = response.data.data || []
+  return list.map(item => {
+    item.isFavorite = true
+    return item
+  })
 }

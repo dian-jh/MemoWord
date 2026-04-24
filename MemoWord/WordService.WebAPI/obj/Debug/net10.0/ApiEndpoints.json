@@ -1,5 +1,87 @@
 [
   {
+    "ContainingType": "WordService.WebAPI.Controllers.FavoriteController",
+    "Method": "GetListAsync",
+    "RelativePath": "word/favorite/list",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "WordService.WebAPI.Controllers.HttpResult\u00601[[System.Collections.Generic.List\u00601[[WordService.Domain.Models.FavoriteWordModel, WordService.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WordService.WebAPI.Controllers.FavoriteController",
+    "Method": "ToggleAsync",
+    "RelativePath": "word/favorite/toggle/{wordId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "wordId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "WordService.WebAPI.Controllers.HttpResult\u00601[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WordService.WebAPI.Controllers.StudyController",
+    "Method": "SyncAllWordsToElasticsearch",
+    "RelativePath": "word/study/admin/sync-to-es",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WordService.WebAPI.Controllers.StudyController",
+    "Method": "GetWordDetailAsync",
+    "RelativePath": "word/study/detail/{wordId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "wordId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "WordService.WebAPI.Controllers.HttpResult\u00601[[WordService.Domain.Models.WordWithFavoriteModel, WordService.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "WordService.WebAPI.Controllers.StudyController",
     "Method": "GetTodayStudyDurationAsync",
     "RelativePath": "word/study/duration/today",
@@ -113,6 +195,32 @@
   },
   {
     "ContainingType": "WordService.WebAPI.Controllers.StudyController",
+    "Method": "SearchWordsAsync",
+    "RelativePath": "word/study/search",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "keyword",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "WordService.WebAPI.Controllers.HttpResult\u00601[[System.Collections.Generic.IReadOnlyList\u00601[[WordService.WebAPI.Controllers.SearchWordResultDto, WordService.WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WordService.WebAPI.Controllers.StudyController",
     "Method": "GetTodayTargetAsync",
     "RelativePath": "word/study/target/today",
     "HttpMethod": "GET",
@@ -173,7 +281,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "WordService.WebAPI.Controllers.HttpResult\u00601[[System.Collections.Generic.IReadOnlyList\u00601[[WordService.Domain.Entities.Word, WordService.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "WordService.WebAPI.Controllers.HttpResult\u00601[[System.Collections.Generic.List\u00601[[WordService.Domain.Models.WordWithFavoriteModel, WordService.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "MediaTypes": [
           "text/plain",
           "application/json",

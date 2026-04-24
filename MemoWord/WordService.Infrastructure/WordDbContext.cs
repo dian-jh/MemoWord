@@ -13,6 +13,8 @@ public class WordDbContext : DbContext
 
     public DbSet<StudyStatistics> StudyStatistics => Set<StudyStatistics>();
 
+    public DbSet<UserFavorite> UserFavorites => Set<UserFavorite>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
