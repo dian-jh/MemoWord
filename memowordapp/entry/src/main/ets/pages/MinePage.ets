@@ -74,35 +74,23 @@ export struct MinePage {
       .backgroundBlurStyle(BlurStyle.Regular)
 
       Column({ space: 10 }) {
+        // 1. 打卡记录（如果也想直接跳转，可以同样去掉判断）
         this.mineItemBuilder($r('app.media.ic_mine_card'), '打卡记录', () => {
-          if (this.token) {
-            router.pushUrl({ url: 'pages/PostHistoryPage' })
-          } else {
-            promptAction.showToast({ message: '请先点击头像登录' })
-          }
+          router.pushUrl({ url: 'pages/PostHistoryPage' })
         })
         Divider()
+
+        // 【修改点】：去掉 if(this.token) 逻辑，直接执行跳转
+        this.mineItemBuilder($r('app.media.ic_mine_card'), '生词本', () => {
+          router.pushUrl({ url: 'pages/RawWordPage' })
+        })
+        Divider()
+
+        // 2. 原有的检查更新
         this.mineItemBuilder($r('app.media.ic_mine_update'), '检查更新', () => {
           promptAction.showToast({ message: '已是最新' })
         })
         Divider()
-        this.mineItemBuilder($r('app.media.ic_mine_about'), '关于', () => {
-          promptAction.showToast({ message: '没有关于' })
-        })
-
-        Blank()
-
-        if (this.token) {
-          Button('退出登录')
-            .width('100%')
-            .fontSize(18)
-            .backgroundColor(Color.Gray)
-            .fontColor(Color.White)
-            .onClick(() => {
-              this.token = ''
-            })
-        }
-
       }
       .width('100%')
       .height('60%')

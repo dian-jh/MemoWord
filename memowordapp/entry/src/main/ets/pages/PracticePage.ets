@@ -6,7 +6,7 @@ import {
   getTodayStudyDuration,
   setTodayLearnedCount,
   setTodayStudyDuration,
-  StudyWord
+  StudyWord,WordWithFavorite
 } from '../http/Api'
 import { parseWordExchanges, ParsedExchange } from '../utils/parseWordExchangesUtil'
 
@@ -31,7 +31,7 @@ export struct PracticePage {
   // ---------------- 状态变量 ----------------
   @State todayTarget: number = 0
   @State learnedCount: number = 0
-  @State wordQueue: StudyWord[] = []
+  @State wordQueue: WordWithFavorite[] = []
 
   @State currentParsedExamples: ExampleSentence[] = []
   @State currentParsedExchanges: ParsedExchange[] = []
@@ -76,11 +76,11 @@ export struct PracticePage {
 
   private onKnow(): void {
     if (this.wordQueue.length === 0) return;
-    const finishedWord: StudyWord = this.wordQueue[0];
+    const finishedWord: WordWithFavorite = this.wordQueue[0];
     this.wordQueue = this.wordQueue.slice(1);
     this.learnedCount += 1;
     this.sessionLearnedCount += 1;
-    console.info('MemoWord_Debug', `[Mastered] 学会了: ${finishedWord.wordContent}, 今日进度: ${this.learnedCount}`);
+    console.info('MemoWord_Debug', `[Mastered] 学会了: ${finishedWord.word.wordContent}, 今日进度: ${this.learnedCount}`);
     if (this.wordQueue.length > 0) {
       this.updateCurrentWordState();
     } else {
@@ -90,10 +90,10 @@ export struct PracticePage {
 
   private onUnknown(): void {
     if (this.wordQueue.length === 0) return;
-    const currentWord: StudyWord = this.wordQueue[0];
-    const remainingQueue: StudyWord[] = this.wordQueue.slice(1);
+    const currentWord: WordWithFavorite = this.wordQueue[0];
+    const remainingQueue: WordWithFavorite[] = this.wordQueue.slice(1);
     this.wordQueue = [...remainingQueue, currentWord];
-    console.info('MemoWord_Debug', `[Recycle] 不认识: ${currentWord.wordContent}, 移至队尾重学`);
+    console.info('MemoWord_Debug', `[Recycle] 不认识: ${currentWord.word.wordContent}, 移至队尾重学`);
     this.updateCurrentWordState();
   }
 
@@ -139,9 +139,9 @@ export struct PracticePage {
   private updateCurrentWordState(): void {
     this.isRevealed = false
     if (this.wordQueue.length > 0) {
-      const word: StudyWord = this.wordQueue[0];
-      this.currentParsedExamples = this.parseExampleSentences(word.exampleSentences, word.id.toString());
-      this.currentParsedExchanges = parseWordExchanges(word.wordExchanges);
+      const word: WordWithFavorite = this.wordQueue[0];
+      this.currentParsedExamples = this.parseExampleSentences(word.word.exampleSentences, word.word.id.toString());
+      this.currentParsedExchanges = parseWordExchanges(word.word.wordExchanges);
     }
   }
 
@@ -303,7 +303,7 @@ export struct PracticePage {
   @Builder
   private wordDisplayBuilder() {
     Column({ space: 12 }) {
-      Text(this.wordQueue[0].wordContent)
+      Text(this.wordQueue[0].word.wordContent)
         .fontSize(35)
         .fontWeight(FontWeight.Bold)
         // 【修改点 1】：顶部主单词改为 #1B9680 主题绿
@@ -311,8 +311,8 @@ export struct PracticePage {
         .textAlign(TextAlign.Center)
         .width('100%')
 
-      if (this.wordQueue[0].phoneticUs) {
-        Text(`美 [${this.wordQueue[0].phoneticUs.replace(/\[|\]/g, '')}]`).phoneticStyle()
+      if (this.wordQueue[0].word.phoneticUs) {
+        Text(`美 [${this.wordQueue[0].word.phoneticUs.replace(/\[|\]/g, '')}]`).phoneticStyle()
       }
     }
     .width('100%').padding({ top: 16, bottom: 8 })
@@ -321,7 +321,7 @@ export struct PracticePage {
   @Builder
   private meaningBuilder() {
     Column({ space: 8 }) {
-      ForEach(this.getMeaningLines(this.wordQueue[0]), (line: string, index: number) => {
+      ForEach(this.getMeaningLines(this.wordQueue[0].word), (line: string, index: number) => {
         Text(line)
           .fontSize(16)
           .lineHeight(26)
@@ -361,7 +361,7 @@ export struct PracticePage {
 
           // 【修改点 2】：放弃单一 Text(item.en)，改用 Text + Span 组合渲染
           Text() {
-            ForEach(this.getHighlightedSegments(item.en, this.wordQueue[0]?.wordContent || ''), (seg: TextSegment) => {
+            ForEach(this.getHighlightedSegments(item.en, this.wordQueue[0]?.word.wordContent || ''), (seg: TextSegment) => {
               Span(seg.text)
               // 如果 isHighlight 为 true，则赋予 #1B9680，并加粗
                 .fontColor(seg.isHighlight ? '#1B9680' : '#000000')

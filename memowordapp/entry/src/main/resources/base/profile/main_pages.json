@@ -6,7 +6,8 @@
     "pages/PostHistoryPage",
     "pages/StudyIndexPage",
     "pages/PracticePage",
-    "pages/StatisticsPage"
-
+    "pages/StatisticsPage",
+    "pages/RawWordPage",
+    "pages/WordDetailPage"
   ]
 }

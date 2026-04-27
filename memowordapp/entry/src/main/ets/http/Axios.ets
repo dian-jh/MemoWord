@@ -56,7 +56,7 @@ class MockCancelError extends Error {
 // ===================================================================================
 
 export const instance = axios.create({
-  baseURL: 'http://10.33.86.233:5195',
+  baseURL: 'http://10.33.86.233:5000',
   timeout: 100000
 })
 
