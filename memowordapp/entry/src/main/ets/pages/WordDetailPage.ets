@@ -2,7 +2,8 @@ import { promptAction, router } from '@kit.ArkUI'
 import {
   StudyWord,
   WordWithFavorite,
-  getWordDetail
+  getWordDetail,
+  toggleFavorite
 } from '../http/Api'
 import { parseWordExchanges, ParsedExchange } from '../utils/parseWordExchangesUtil'
 
@@ -123,6 +124,28 @@ struct WordDetailPage {
     return lines.length > 0 ? lines : ['暂无释义'];
   }
 
+  // 收藏功能
+  async handleToggleFavorite() {
+    if (!this.wordData) return;
+
+    try {
+      // 调用 API
+      const newState = await toggleFavorite(this.wordData.word.id);
+
+      // 更新本地状态，触发 UI 刷新
+      this.wordData = {
+        word: this.wordData.word,
+        isFavorite: newState
+      };
+
+      promptAction.showToast({
+        message: newState ? '已添加到收藏夹' : '已取消收藏'
+      });
+    } catch (e) {
+      promptAction.showToast({ message: '操作失败，请检查网络' });
+    }
+  }
+
   build() {
     Column() {
       // 头部
@@ -170,7 +193,16 @@ struct WordDetailPage {
       Image($r('app.media.ic_back'))
         .width(24).height(24)
         .onClick(() => router.back())
+
       Blank()
+
+      // 收藏按钮
+      if (this.wordData) {
+        Image(this.wordData.isFavorite ? $r('app.media.ic_star') : $r('app.media.ic_unstar'))
+          .width(26)
+          .height(26)
+          .onClick(() => this.handleToggleFavorite())
+      }
     }
     .width('100%')
     .height(56)

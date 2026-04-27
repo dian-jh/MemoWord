@@ -4,6 +4,7 @@ import {
   FavoriteWord,
   toggleFavorite
 } from '../http/Api';
+import { StudyMode } from './PracticePage'
 
 @Entry
 @Component
@@ -142,7 +143,12 @@ struct FavoritePage {
               .fontSize(13)
               .borderRadius(16)
               .onClick(() => {
-                // 逻辑处理
+                router.pushUrl(({
+                  url: 'pages/PracticePage',
+                  params: {
+                    mode: StudyMode.FAVOURITE
+                  }
+                }))
               })
           }
           .width('100%')
@@ -226,7 +232,6 @@ struct FavoritePage {
   @Builder
   emptyStateBuilder() {
     Column({ space: 10 }) {
-      Image($r('app.media.ic_logo')).width(100).opacity(0.3)
       Text('生词本空空如也').fontColor('#999')
     }
     .width('100%')

@@ -6,7 +6,9 @@ import {
   getTodayStudyDuration,
   setTodayLearnedCount,
   setTodayStudyDuration,
-  StudyWord,WordWithFavorite
+  StudyWord,WordWithFavorite,
+  toggleFavorite,getFavoriteList,
+  FavoriteWord
 } from '../http/Api'
 import { parseWordExchanges, ParsedExchange } from '../utils/parseWordExchangesUtil'
 
@@ -21,6 +23,11 @@ interface TextSegment {
   id: string;
   text: string;
   isHighlight: boolean;
+}
+
+export enum StudyMode {
+  TODAY_PLAN,  // 今日计划模式
+  FAVOURITE     // 生词本模式
 }
 
 @Entry
@@ -46,29 +53,73 @@ export struct PracticePage {
   private isSyncing: boolean = false;
 
   aboutToAppear(): void {
-    this.startSession()
+    const params = router.getParams() as Record<string, Object>;
+    if (params && params.mode) {
+      this.sourceMode = params.mode as StudyMode;
+    }
+    this.startSession();
   }
+  // 【新增】：接收跳转参数，默认为今日计划模式
+  private sourceMode: StudyMode = StudyMode.TODAY_PLAN;
 
   private async startSession(): Promise<void> {
     this.isLoading = true
     try {
-      this.todayTarget = await getTodayTargetCount();
-      this.learnedCount = await getTodayLearnedCount();
-      this.initialDuration = await getTodayStudyDuration();
-
-      this.sessionLearnedCount = 0;
       this.sessionStartTime = Date.now();
+      this.sessionLearnedCount = 0;
 
-      const remainCount: number = this.todayTarget - this.learnedCount;
-      if (remainCount > 0) {
-        this.wordQueue = await getTodayWordQueue(remainCount);
-        this.updateCurrentWordState();
+      if (this.sourceMode === StudyMode.FAVOURITE) {
+        // 1. 调用 API 获取收藏列表
+        const favoriteList = await getFavoriteList();
+
+        // 2. 转换为练习页需要的 WordWithFavorite[] 结构
+        this.wordQueue = favoriteList.map((item: FavoriteWord): WordWithFavorite => {
+          // 按照 StudyWord 接口要求补全所有必填字段
+          const studyWord: StudyWord = {
+            id: item.wordId,
+            wordContent: item.wordContent,
+            phoneticUs: item.phoneticUs,
+            translation: item.translation,
+            definition: null, // FavoriteWord 模型中没有，设为 null
+            exampleSentences: item.exampleSentences,
+            wordExchanges: item.wordExchanges,
+
+            // 👇 补齐接口中定义的必填字段
+            phoneticEn: null,
+            wordTags: null,
+            // 以下四个字段在接口中是 number 类型，不能传 null，建议传 0
+            bncLevel: 0,
+            frqLevel: 0,
+            collinsLevel: 0,
+            oxfordLevel: 0
+          };
+
+          return {
+            isFavorite: item.isFavorite,
+            word: studyWord
+          };
+        });
+
+        // 3. 设置练习进度状态
+        this.todayTarget = this.wordQueue.length;
+        this.learnedCount = 0;
+        this.initialDuration = await getTodayStudyDuration();
       } else {
-        this.wordQueue = [];
+        // --- 逻辑：原有的今日计划模式 ---
+        this.todayTarget = await getTodayTargetCount();
+        this.learnedCount = await getTodayLearnedCount();
+        this.initialDuration = await getTodayStudyDuration();
+
+        const remainCount = this.todayTarget - this.learnedCount;
+        if (remainCount > 0) {
+          this.wordQueue = await getTodayWordQueue(remainCount);
+        }
       }
+
+      this.updateCurrentWordState();
     } catch (error) {
-      console.error('MemoWord_Debug', '[Session] 启动失败', JSON.stringify(error));
-      promptAction.showToast({ message: '加载学习数据失败' });
+      console.error('MemoWord_Debug', '加载失败', JSON.stringify(error));
+      promptAction.showToast({ message: '加载单词失败' });
     } finally {
       this.isLoading = false;
     }
@@ -120,11 +171,12 @@ export struct PracticePage {
     const finalDuration: number = this.initialDuration + addedMinutes;
 
     try {
-      if (this.sessionLearnedCount > 0 || addedMinutes > 0) {
-        console.info('MemoWord_Debug', `[Exit] 正在同步数据...`);
+      // 无论什么模式，学习时间都要同步
+      await setTodayStudyDuration(this.initialDuration + addedMinutes);
+
+      // 只有在今日计划模式下，才更新今日学习数量
+      if (this.sourceMode === StudyMode.TODAY_PLAN && this.sessionLearnedCount > 0) {
         await setTodayLearnedCount(this.learnedCount);
-        await setTodayStudyDuration(finalDuration);
-        console.info('MemoWord_Debug', `[Exit] 同步成功`);
       }
     } catch (error) {
       console.error('MemoWord_Debug', '[Exit] 同步失败', JSON.stringify(error));
@@ -223,6 +275,34 @@ export struct PracticePage {
     return segments;
   }
 
+  // 处理收藏切换
+  private async handleToggleFavorite() {
+    if (this.wordQueue.length === 0) return;
+
+    const currentWord = this.wordQueue[0];
+    try {
+      const newState = await toggleFavorite(currentWord.word.id);
+
+      // 更新本地队列中当前单词的状态，触发 UI 刷新
+      // 创建一个新对象以确保 ArkTS 检测到状态变化
+      const updatedWord: WordWithFavorite = {
+        word: currentWord.word,
+        isFavorite: newState
+      };
+
+      // 将队列的第一项替换为更新后的单词
+      this.wordQueue[0] = updatedWord;
+      // 强制触发 UI 刷新（针对数组内部对象的修改）
+      this.wordQueue = [...this.wordQueue];
+
+      promptAction.showToast({
+        message: newState ? '已添加到收藏夹' : '已取消收藏'
+      });
+    } catch (error) {
+      promptAction.showToast({ message: '操作失败' });
+    }
+  }
+
   // ---------------- UI 构建 ----------------
   build() {
     Column() {
@@ -252,7 +332,15 @@ export struct PracticePage {
         Text(`${this.learnedCount} / ${this.todayTarget}`)
           .fontSize(18).fontWeight(700).fontColor('#000000').layoutWeight(1).textAlign(TextAlign.Center)
 
-        Blank().width(26)
+        // 【修改点】：添加收藏按钮
+        if (this.wordQueue.length > 0 && !this.isLoading) {
+          Image(this.wordQueue[0].isFavorite ? $r('app.media.ic_star') : $r('app.media.ic_unstar'))
+            .width(26).height(26)
+            .fillColor(this.wordQueue[0].isFavorite ? '#FFB400' : '#000000')
+            .onClick(() => this.handleToggleFavorite())
+        } else {
+          Blank().width(26) // 占位，保持标题居中
+        }
       }
       .width('100%').height(56).padding({ left: 16, right: 16 })
 
