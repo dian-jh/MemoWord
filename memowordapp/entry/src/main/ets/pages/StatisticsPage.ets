@@ -122,9 +122,6 @@ export struct  StatisticsPage {
           Text('坚持是成功的唯一捷径').fontSize(13).fontColor('#999').margin({ top: 4 })
         }.alignItems(HorizontalAlign.Start)
         Blank()
-        Button('数据同步', { type: ButtonType.Capsule })
-          .backgroundColor(this.PRIMARY_COLOR).height(32).fontSize(12)
-          .onClick(() => this.syncTodayData())
       }.width('100%').padding({ left: 20, right: 20, top: 40, bottom: 20 })
 
       Scroll() {

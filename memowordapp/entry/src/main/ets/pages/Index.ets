@@ -11,9 +11,17 @@ struct Index {
   // 【新增】：添加一个全局刷新标志位
   @StorageLink('refreshFlag') refreshFlag: number = 0;
 
+  // Index.ets (主页)
+  aboutToAppear() {
+    // ✅ 必须有这一步初始化，否则 MinePage 连不到信号
+    AppStorage.setOrCreate('needRefreshMine', 0);
+  }
+
+
   onPageShow() {
-    // 当从 SplashPage 进入，或者从 PracticePage router.back() 返回时，这里会被触发
-    // 每次显示，让标志位 +1，触发子组件的 @Watch 监听
+    const signal = Date.now();
+    console.info("Index: 发送刷新信号 -> " + signal);
+    AppStorage.setOrCreate('needRefreshMine', signal);
     this.refreshFlag++;
   }
 

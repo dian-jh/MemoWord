@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MemoWord.ServiceDefaults")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+160997b4bf757eee5f76545006269e8076c8bc05")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c7f3619157456fe3f70d0dfd130ffbcb3f7c733e")]
 [assembly: System.Reflection.AssemblyProductAttribute("MemoWord.ServiceDefaults")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MemoWord.ServiceDefaults")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

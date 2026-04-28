@@ -15,6 +15,8 @@ public class WordDbContext : DbContext
 
     public DbSet<UserFavorite> UserFavorites => Set<UserFavorite>();
 
+    public DbSet<SearchHistory> SearchHistories => Set<SearchHistory>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

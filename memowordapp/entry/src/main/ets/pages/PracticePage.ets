@@ -6,9 +6,20 @@ import {
   getTodayStudyDuration,
   setTodayLearnedCount,
   setTodayStudyDuration,
-  StudyWord,WordWithFavorite
+  toggleFavorite,
+  getFavoriteList,
+  StudyWord,
+  WordWithFavorite,
+  FavoriteWord
 } from '../http/Api'
 import { parseWordExchanges, ParsedExchange } from '../utils/parseWordExchangesUtil'
+import { StorageKeys } from '../store/GlobalState';
+
+// 定义学习模式枚举
+export enum StudyMode {
+  TODAY_PLAN,  // 今日计划模式
+  FAVORITE     // 生词本模式
+}
 
 interface ExampleSentence {
   id: string
@@ -16,7 +27,6 @@ interface ExampleSentence {
   zh: string
 }
 
-// 【新增】：用于富文本高亮渲染的接口
 interface TextSegment {
   id: string;
   text: string;
@@ -44,28 +54,71 @@ export struct PracticePage {
   private initialDuration: number = 0;
   private sessionLearnedCount: number = 0;
   private isSyncing: boolean = false;
+  // 默认为今日计划模式
+  private sourceMode: StudyMode = StudyMode.TODAY_PLAN;
 
   aboutToAppear(): void {
+    // 解析路由参数判断模式
+    const params = router.getParams() as Record<string, Object>;
+    if (params && params.mode !== undefined) {
+      this.sourceMode = params.mode as StudyMode;
+    }
     this.startSession()
   }
 
   private async startSession(): Promise<void> {
     this.isLoading = true
     try {
-      this.todayTarget = await getTodayTargetCount();
-      this.learnedCount = await getTodayLearnedCount();
+      this.sessionStartTime = Date.now();
+      this.sessionLearnedCount = 0;
+
+      // 无论什么模式都先获取初始时长
       this.initialDuration = await getTodayStudyDuration();
 
-      this.sessionLearnedCount = 0;
-      this.sessionStartTime = Date.now();
+      if (this.sourceMode === StudyMode.FAVORITE) {
+        // --- 场景 A：生词本模式 ---
+        const favoriteList = await getFavoriteList();
 
-      const remainCount: number = this.todayTarget - this.learnedCount;
-      if (remainCount > 0) {
-        this.wordQueue = await getTodayWordQueue(remainCount);
-        this.updateCurrentWordState();
+        // 数据模型转换：FavoriteWord -> WordWithFavorite
+        this.wordQueue = favoriteList.map((item: FavoriteWord): WordWithFavorite => {
+          return {
+            isFavorite: true,
+            word: {
+              id: item.wordId,
+              wordContent: item.wordContent,
+              phoneticUs: item.phoneticUs,
+              translation: item.translation,
+              exampleSentences: item.exampleSentences,
+              wordExchanges: item.wordExchanges,
+              // 补齐后端 StudyWord 接口要求的必填基础字段
+              definition: null,
+              phoneticEn: null,
+              wordTags: null,
+              bncLevel: 0,
+              frqLevel: 0,
+              collinsLevel: 0,
+              oxfordLevel: 0
+            }
+          };
+        });
+
+        this.todayTarget = this.wordQueue.length;
+        this.learnedCount = 0; // 生词本模式从0开始计数
+
       } else {
-        this.wordQueue = [];
+        // --- 场景 B：今日计划模式 ---
+        this.todayTarget = await getTodayTargetCount();
+        this.learnedCount = await getTodayLearnedCount();
+
+        const remainCount: number = this.todayTarget - this.learnedCount;
+        if (remainCount > 0) {
+          this.wordQueue = await getTodayWordQueue(remainCount);
+        } else {
+          this.wordQueue = [];
+        }
       }
+
+      this.updateCurrentWordState();
     } catch (error) {
       console.error('MemoWord_Debug', '[Session] 启动失败', JSON.stringify(error));
       promptAction.showToast({ message: '加载学习数据失败' });
@@ -80,7 +133,13 @@ export struct PracticePage {
     this.wordQueue = this.wordQueue.slice(1);
     this.learnedCount += 1;
     this.sessionLearnedCount += 1;
-    console.info('MemoWord_Debug', `[Mastered] 学会了: ${finishedWord.word.wordContent}, 今日进度: ${this.learnedCount}`);
+
+    // 只有在今日计划模式下才同步 AppStorage 影响首页进度环
+    if (this.sourceMode === StudyMode.TODAY_PLAN) {
+      AppStorage.setOrCreate(StorageKeys.TODAY_LEARNED, this.learnedCount);
+    }
+
+    console.info('MemoWord_Debug', `[Mastered] 学会了: ${finishedWord.word.wordContent}`);
     if (this.wordQueue.length > 0) {
       this.updateCurrentWordState();
     } else {
@@ -111,6 +170,7 @@ export struct PracticePage {
     const sessionMs: number = Date.now() - this.sessionStartTime;
     let addedMinutes: number = 0;
 
+    // 计算本次学习时长（至少1分钟逻辑）
     if (sessionMs >= 60000) {
       addedMinutes = Math.round(sessionMs / 60000);
     } else if (sessionMs >= 10000 && this.sessionLearnedCount > 0) {
@@ -122,8 +182,15 @@ export struct PracticePage {
     try {
       if (this.sessionLearnedCount > 0 || addedMinutes > 0) {
         console.info('MemoWord_Debug', `[Exit] 正在同步数据...`);
-        await setTodayLearnedCount(this.learnedCount);
+
+        // 1. 无论什么模式都同步时长
         await setTodayStudyDuration(finalDuration);
+
+        // 2. 只有今日计划模式才同步已学单词数量到后端统计表
+        if (this.sourceMode === StudyMode.TODAY_PLAN) {
+          await setTodayLearnedCount(this.learnedCount);
+        }
+
         console.info('MemoWord_Debug', `[Exit] 同步成功`);
       }
     } catch (error) {
@@ -153,21 +220,12 @@ export struct PracticePage {
     const lines: string[] = [];
     const splitLine = (str: string): string[] => {
       let arr: string[] = str.split('\\n');
-      if (arr.length <= 1) {
-        arr = str.split('\n');
-      }
-      return arr.map((item: string) => item.trim())
-        .filter((item: string) => item.length > 0);
+      if (arr.length <= 1) arr = str.split('\n');
+      return arr.map((item: string) => item.trim()).filter((item: string) => item.length > 0);
     };
 
-    if (word.translation) {
-      const transList: string[] = splitLine(word.translation);
-      lines.push(...transList);
-    }
-    if (word.definition) {
-      const defList: string[] = splitLine(word.definition);
-      lines.push(...defList);
-    }
+    if (word.translation) lines.push(...splitLine(word.translation));
+    if (word.definition) lines.push(...splitLine(word.definition));
     return lines.length > 0 ? lines : ['暂无释义'];
   }
 
@@ -180,16 +238,11 @@ export struct PracticePage {
     for (let i = 0; i < segments.length; i++) {
       const segment = segments[i]
       const hasChinese = /[\u4e00-\u9fa5]/.test(segment)
-
       if (!hasChinese) {
         currentEn = segment
       } else {
         if (currentEn !== '') {
-          sentenceList.push({
-            id: `${wordId}-${sentenceList.length}`,
-            en: currentEn,
-            zh: segment
-          })
+          sentenceList.push({ id: `${wordId}-${sentenceList.length}`, en: currentEn, zh: segment })
           currentEn = ''
         }
       }
@@ -197,16 +250,10 @@ export struct PracticePage {
     return sentenceList.slice(0, 3)
   }
 
-  // 【新增】：根据目标单词切割英文句子，返回一段段可渲染的 Span 数组
   private getHighlightedSegments(sentence: string, targetWord: string): TextSegment[] {
-    if (!targetWord || !sentence) {
-      return [{ id: '0', text: sentence, isHighlight: false }];
-    }
-    // 转义正则特殊字符，防止报错，并使用忽略大小写 'i'
+    if (!targetWord || !sentence) return [{ id: '0', text: sentence, isHighlight: false }];
     const escapedWord = targetWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp(`(${escapedWord})`, 'i');
-
-    // split 时正则带括号，会把匹配到的单词也保留在数组里
     const parts = sentence.split(regex);
     const segments: TextSegment[] = [];
 
@@ -215,12 +262,28 @@ export struct PracticePage {
         segments.push({
           id: `${i}-${parts[i]}`,
           text: parts[i],
-          // 如果当前片段转小写等于目标单词，则判定为需要高亮
           isHighlight: parts[i].toLowerCase() === targetWord.toLowerCase()
         });
       }
     }
     return segments;
+  }
+
+  private async handleToggleFavorite() {
+    if (this.wordQueue.length === 0) return;
+    const currentWord = this.wordQueue[0];
+    try {
+      const newStatus = await toggleFavorite(currentWord.word.id);
+      const updatedQueue = [...this.wordQueue];
+      updatedQueue[0].isFavorite = newStatus;
+      this.wordQueue = updatedQueue;
+
+      promptAction.showToast({
+        message: newStatus ? '已加入生词本' : '已移出生词本'
+      });
+    } catch (error) {
+      promptAction.showToast({ message: '操作失败，请检查网络' });
+    }
   }
 
   // ---------------- UI 构建 ----------------
@@ -233,7 +296,12 @@ export struct PracticePage {
       } else if (this.isLoading && !this.isSyncing) {
         this.statusPageBuilder('准备中...', '正在为您加载单词', false)
       } else if (this.wordQueue.length === 0) {
-        this.statusPageBuilder('今日目标已完成', '太棒了，进度已全部同步', true)
+        // ✅ 直接在参数位置使用三元表达式，不要定义变量
+        this.statusPageBuilder(
+          this.sourceMode === StudyMode.FAVORITE ? '学习完成' : '今日目标已完成',
+          '太棒了，进度已全部同步',
+          true
+        )
       } else {
         this.practiceContentBuilder()
       }
@@ -252,7 +320,15 @@ export struct PracticePage {
         Text(`${this.learnedCount} / ${this.todayTarget}`)
           .fontSize(18).fontWeight(700).fontColor('#000000').layoutWeight(1).textAlign(TextAlign.Center)
 
-        Blank().width(26)
+        if (this.wordQueue.length > 0) {
+          Image(this.wordQueue[0].isFavorite ? $r('app.media.ic_star') : $r('app.media.ic_unstar'))
+            .width(26)
+            .height(26)
+            .objectFit(ImageFit.Contain)
+            .onClick(() => this.handleToggleFavorite())
+        } else {
+          Blank().width(26)
+        }
       }
       .width('100%').height(56).padding({ left: 16, right: 16 })
 
@@ -270,18 +346,9 @@ export struct PracticePage {
       Scroll() {
         Column({ space: 12 }) {
           this.wordDisplayBuilder()
-
-          if (this.isRevealed) {
-            this.meaningBuilder()
-          }
-
-          if (this.isRevealed && this.currentParsedExchanges.length > 0) {
-            this.exchangesBuilder()
-          }
-
-          if (this.currentParsedExamples.length > 0) {
-            this.examplesBuilder()
-          }
+          if (this.isRevealed) this.meaningBuilder()
+          if (this.isRevealed && this.currentParsedExchanges.length > 0) this.exchangesBuilder()
+          if (this.currentParsedExamples.length > 0) this.examplesBuilder()
         }
         .width('100%').padding({ left: 16, right: 16, top: 12, bottom: 20 })
       }
@@ -306,7 +373,6 @@ export struct PracticePage {
       Text(this.wordQueue[0].word.wordContent)
         .fontSize(35)
         .fontWeight(FontWeight.Bold)
-        // 【修改点 1】：顶部主单词改为 #1B9680 主题绿
         .fontColor('#1B9680')
         .textAlign(TextAlign.Center)
         .width('100%')
@@ -322,31 +388,22 @@ export struct PracticePage {
   private meaningBuilder() {
     Column({ space: 8 }) {
       ForEach(this.getMeaningLines(this.wordQueue[0].word), (line: string, index: number) => {
-        Text(line)
-          .fontSize(16)
-          .lineHeight(26)
-          .fontWeight(FontWeight.Medium)
-          .fontColor('#000000')
-          .width('100%')
-          .textAlign(TextAlign.Start)
+        Text(line).fontSize(16).lineHeight(26).fontWeight(FontWeight.Medium).fontColor('#000000').width('100%')
       }, (line: string, index: number) => index.toString())
     }
-    .width('100%')
-    .padding(16)
-    .backgroundColor('#FAFAFA')
-    .borderRadius(20)
+    .width('100%').padding(16).backgroundColor('#FAFAFA').borderRadius(20)
   }
 
   @Builder
   private exchangesBuilder() {
     Flex({ wrap: FlexWrap.Wrap }) {
-      ForEach(this.currentParsedExchanges, (exchange: ParsedExchange, index: number) => {
+      ForEach(this.currentParsedExchanges, (exchange: ParsedExchange) => {
         Row({ space: 6 }) {
           Text(exchange.label).fontSize(12).fontColor('#555555')
           Text(exchange.word).fontSize(14).fontWeight(FontWeight.Medium).fontColor('#000000')
         }
         .padding({ left: 10, right: 10, top: 6, bottom: 6 }).backgroundColor('#F5F5F5').borderRadius(8).margin({ right: 8, bottom: 8 })
-      }, (exchange: ParsedExchange, index: number) => index.toString())
+      }, (item: ParsedExchange, index: number) => index.toString())
     }
     .width('100%').padding(16).backgroundColor('#FAFAFA').borderRadius(20)
   }
@@ -355,24 +412,16 @@ export struct PracticePage {
   private examplesBuilder() {
     Column({ space: 12 }) {
       Text('例句').fontSize(16).fontWeight(700).fontColor('#000000').width('100%')
-
       ForEach(this.currentParsedExamples, (item: ExampleSentence) => {
         Column({ space: 6 }) {
-
-          // 【修改点 2】：放弃单一 Text(item.en)，改用 Text + Span 组合渲染
           Text() {
             ForEach(this.getHighlightedSegments(item.en, this.wordQueue[0]?.word.wordContent || ''), (seg: TextSegment) => {
               Span(seg.text)
-              // 如果 isHighlight 为 true，则赋予 #1B9680，并加粗
                 .fontColor(seg.isHighlight ? '#1B9680' : '#000000')
                 .fontWeight(seg.isHighlight ? FontWeight.Bold : FontWeight.Medium)
             }, (seg: TextSegment) => seg.id)
-          }
-          .fontSize(15).lineHeight(22).width('100%')
-
-          if (this.isRevealed && item.zh) {
-            Text(item.zh).fontSize(14).lineHeight(20).fontColor('#555555').width('100%')
-          }
+          }.fontSize(15).lineHeight(22).width('100%')
+          if (this.isRevealed && item.zh) Text(item.zh).fontSize(14).lineHeight(20).fontColor('#555555').width('100%')
         }
         .width('100%').padding(12).backgroundColor('#F5F5F5').borderRadius(16).margin({ bottom: 6 })
       }, (item: ExampleSentence) => item.id)
@@ -383,31 +432,20 @@ export struct PracticePage {
   @Builder
   private bottomActionBuilder() {
     Row({ space: 0 }) {
-      Column({ space: 6 }) {
-        Text('认识')
-          .fontSize(18)
-          .fontWeight(FontWeight.Medium)
-          .fontColor('#000000')
-          .textAlign(TextAlign.Center)
-
-        Row().width(20).height(6).borderRadius(5).backgroundColor('#1FBE93')
-      }
-      .layoutWeight(1).justifyContent(FlexAlign.Center).alignItems(HorizontalAlign.Center)
-      .onClick(() => this.onKnow())
-
-      Column({ space: 6 }) {
-        Text('不认识')
-          .fontSize(18)
-          .fontWeight(FontWeight.Medium)
-          .fontColor('#000000')
-          .textAlign(TextAlign.Center)
-
-        Row().width(20).height(6).borderRadius(5).backgroundColor('#FF6B6B')
-      }
-      .layoutWeight(1).justifyContent(FlexAlign.Center).alignItems(HorizontalAlign.Center)
-      .onClick(() => this.onUnknown())
+      this.actionButtonBuilder('认识', '#1FBE93', () => this.onKnow())
+      this.actionButtonBuilder('不认识', '#FF6B6B', () => this.onUnknown())
     }
     .width('100%').padding({ left: 40, right: 40, bottom: 32, top: 12 })
+  }
+
+  @Builder
+  private actionButtonBuilder(label: string, color: string, action: () => void) {
+    Column({ space: 6 }) {
+      Text(label).fontSize(18).fontWeight(FontWeight.Medium).fontColor('#000000').textAlign(TextAlign.Center)
+      Row().width(20).height(6).borderRadius(5).backgroundColor(color)
+    }
+    .layoutWeight(1).justifyContent(FlexAlign.Center).alignItems(HorizontalAlign.Center)
+    .onClick(action)
   }
 
   @Builder

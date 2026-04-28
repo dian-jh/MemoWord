@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WordService.Domain;
 using WordService.Domain.Models;
 using WordService.WebAPI.DTO;
@@ -48,12 +49,25 @@ public class FavoriteController : ControllerBase
         return Ok(HttpResult<List<FavoriteWordModel>>.Success(list));
     }
 
-    // --- 内部辅助方法 ---
     private bool TryGetUserId(out Guid userId)
     {
-        // 这里是你之前实现的解析 Token 获取 UserId 的逻辑
-        // 建议从 HttpContext.Items 或 Claims 中读取
-        var userIdStr = User.FindFirst("UserId")?.Value;
-        return Guid.TryParse(userIdStr, out userId);
+        var headerUserId = Request.Headers["X-User-Id"].ToString();
+
+        // 2. 如果 Header 不存在，可以尝试从当前的 Claims 中获取（如果该服务也配置了身份验证中间件）
+        if (string.IsNullOrEmpty(headerUserId))
+        {
+            headerUserId = User.FindFirstValue("userId")
+                           ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+
+        // 3. 严谨校验：如果拿到的是空值，直接返回 false，不使用伪造 ID
+        if (string.IsNullOrEmpty(headerUserId))
+        {
+            userId = Guid.Empty;
+            return false;
+        }
+
+        // 4. 类型转换
+        return Guid.TryParse(headerUserId, out userId);
     }
 }

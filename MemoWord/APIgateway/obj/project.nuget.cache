@@ -1,0 +1,82 @@
+{
+  "version": 2,
+  "dgSpecHash": "BOb8b0BNNdM=",
+  "success": true,
+  "projectFilePath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\APIgateway\\APIgateway.csproj",
+  "expectedPackageFiles": [
+    "D:\\AppData\\Developer\\NuGet\\microsoft.aspnetcore.authentication.jwtbearer\\10.0.7\\microsoft.aspnetcore.authentication.jwtbearer.10.0.7.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.aspnetcore.openapi\\10.0.6\\microsoft.aspnetcore.openapi.10.0.6.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.extensions.ambientmetadata.application\\10.1.0\\microsoft.extensions.ambientmetadata.application.10.1.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.extensions.compliance.abstractions\\10.1.0\\microsoft.extensions.compliance.abstractions.10.1.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.extensions.dependencyinjection.autoactivation\\10.1.0\\microsoft.extensions.dependencyinjection.autoactivation.10.1.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.extensions.diagnostics.exceptionsummarization\\10.1.0\\microsoft.extensions.diagnostics.exceptionsummarization.10.1.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.extensions.http.diagnostics\\10.1.0\\microsoft.extensions.http.diagnostics.10.1.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.extensions.http.resilience\\10.1.0\\microsoft.extensions.http.resilience.10.1.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.extensions.resilience\\10.1.0\\microsoft.extensions.resilience.10.1.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.extensions.servicediscovery\\10.5.0\\microsoft.extensions.servicediscovery.10.5.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.extensions.servicediscovery.abstractions\\10.5.0\\microsoft.extensions.servicediscovery.abstractions.10.5.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.extensions.servicediscovery.yarp\\10.5.0\\microsoft.extensions.servicediscovery.yarp.10.5.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.extensions.telemetry\\10.1.0\\microsoft.extensions.telemetry.10.1.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.extensions.telemetry.abstractions\\10.1.0\\microsoft.extensions.telemetry.abstractions.10.1.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.identitymodel.abstractions\\8.0.1\\microsoft.identitymodel.abstractions.8.0.1.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.identitymodel.jsonwebtokens\\8.0.1\\microsoft.identitymodel.jsonwebtokens.8.0.1.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.identitymodel.logging\\8.0.1\\microsoft.identitymodel.logging.8.0.1.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.identitymodel.protocols\\8.0.1\\microsoft.identitymodel.protocols.8.0.1.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.identitymodel.protocols.openidconnect\\8.0.1\\microsoft.identitymodel.protocols.openidconnect.8.0.1.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.identitymodel.tokens\\8.0.1\\microsoft.identitymodel.tokens.8.0.1.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\opentelemetry\\1.14.0\\opentelemetry.1.14.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\opentelemetry.api\\1.14.0\\opentelemetry.api.1.14.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\opentelemetry.api.providerbuilderextensions\\1.14.0\\opentelemetry.api.providerbuilderextensions.1.14.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\opentelemetry.exporter.opentelemetryprotocol\\1.14.0\\opentelemetry.exporter.opentelemetryprotocol.1.14.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\opentelemetry.extensions.hosting\\1.14.0\\opentelemetry.extensions.hosting.1.14.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\opentelemetry.instrumentation.aspnetcore\\1.14.0\\opentelemetry.instrumentation.aspnetcore.1.14.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\opentelemetry.instrumentation.http\\1.14.0\\opentelemetry.instrumentation.http.1.14.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\opentelemetry.instrumentation.runtime\\1.14.0\\opentelemetry.instrumentation.runtime.1.14.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\polly.core\\8.4.2\\polly.core.8.4.2.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\polly.extensions\\8.4.2\\polly.extensions.8.4.2.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\polly.ratelimiting\\8.4.2\\polly.ratelimiting.8.4.2.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\scalar.aspnetcore\\2.14.1\\scalar.aspnetcore.2.14.1.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\system.identitymodel.tokens.jwt\\8.0.1\\system.identitymodel.tokens.jwt.8.0.1.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\system.io.hashing\\8.0.0\\system.io.hashing.8.0.0.nupkg.sha512",
+    "D:\\AppData\\Developer\\NuGet\\yarp.reverseproxy\\2.3.0\\yarp.reverseproxy.2.3.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "包 \"OpenTelemetry.Api\" 1.14.0 具有已知的 中 严重性漏洞，https://github.com/advisories/GHSA-g94r-2vxg-569j",
+      "projectPath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\APIgateway\\APIgateway.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\APIgateway\\APIgateway.csproj",
+      "libraryId": "OpenTelemetry.Api",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "包 \"OpenTelemetry.Exporter.OpenTelemetryProtocol\" 1.14.0 具有已知的 中 严重性漏洞，https://github.com/advisories/GHSA-mr8r-92fq-pj8p",
+      "projectPath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\APIgateway\\APIgateway.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\APIgateway\\APIgateway.csproj",
+      "libraryId": "OpenTelemetry.Exporter.OpenTelemetryProtocol",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "包 \"OpenTelemetry.Exporter.OpenTelemetryProtocol\" 1.14.0 具有已知的 中 严重性漏洞，https://github.com/advisories/GHSA-q834-8qmm-v933",
+      "projectPath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\APIgateway\\APIgateway.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\APIgateway\\APIgateway.csproj",
+      "libraryId": "OpenTelemetry.Exporter.OpenTelemetryProtocol",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
+}

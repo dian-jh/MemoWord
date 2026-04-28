@@ -49,8 +49,11 @@ builder.Services.AddScoped<IWordRepository, WordRepository>();
 builder.Services.AddScoped<IStudyStatisticsRepository, StudyStatisticsRepository>();
 builder.Services.AddScoped<IWordSearchRepository, ElasticWordSearchRepository>();
 builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+builder.Services.AddScoped<ISearchHistoryRepository, SearchHistoryRepository>();
 builder.Services.AddScoped<WordDomainService>();
 builder.Services.AddScoped<StudyStatisticsDomainService>();
+builder.Services.AddScoped<FavoriteDomainService>();
+builder.Services.AddScoped<SearchHistoryDomainService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

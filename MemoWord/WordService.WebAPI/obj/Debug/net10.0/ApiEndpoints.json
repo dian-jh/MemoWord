@@ -128,6 +128,72 @@
     ]
   },
   {
+    "ContainingType": "WordService.WebAPI.Controllers.SearchHistoryController",
+    "Method": "AddHistoryAsync",
+    "RelativePath": "word/study/history",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "WordService.WebAPI.Controllers.SearchHistoryController\u002BAddHistoryRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "WordService.WebAPI.Controllers.HttpResult\u00601[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WordService.WebAPI.Controllers.SearchHistoryController",
+    "Method": "GetHistoryAsync",
+    "RelativePath": "word/study/history",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "WordService.WebAPI.Controllers.HttpResult\u00601[[System.Collections.Generic.List\u00601[[WordService.WebAPI.DTO.SearchHistoryDto, WordService.WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WordService.WebAPI.Controllers.SearchHistoryController",
+    "Method": "ClearHistoryAsync",
+    "RelativePath": "word/study/history",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "WordService.WebAPI.Controllers.HttpResult\u00601[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "WordService.WebAPI.Controllers.StudyController",
     "Method": "GetLearnedHistoryAsync",
     "RelativePath": "word/study/learned/history",

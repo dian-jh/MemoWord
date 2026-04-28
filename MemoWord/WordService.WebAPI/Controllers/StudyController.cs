@@ -205,21 +205,24 @@ public class StudyController : ControllerBase
 
     private bool TryGetUserId(out Guid userId)
     {
-        // 1. 尝试从真实的 JWT Token 中获取
-        var rawUserId =
-            User.FindFirstValue("userId")
-            ?? User.FindFirstValue(ClaimTypes.NameIdentifier)
-            ?? User.FindFirstValue("sub");
+        var headerUserId = Request.Headers["X-User-Id"].ToString();
 
-        // 2. 【核心 Mock 逻辑】：如果拿不到（说明没带 Token），且当前是开发环境，就给一个固定测试 ID
-        if (string.IsNullOrEmpty(rawUserId) /* && 可以加上判断当前是否为 Development 环境的逻辑 */)
+        // 2. 如果 Header 不存在，可以尝试从当前的 Claims 中获取（如果该服务也配置了身份验证中间件）
+        if (string.IsNullOrEmpty(headerUserId))
         {
-            // 伪造一个固定的 Guid 作为当前测试用户
-            rawUserId = "11111111-2222-3333-4444-555555555555";
-            Console.WriteLine($"[Mock Auth] 使用了伪造的 UserId: {rawUserId}");
+            headerUserId = User.FindFirstValue("userId")
+                           ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-        return Guid.TryParse(rawUserId, out userId);
+        // 3. 严谨校验：如果拿到的是空值，直接返回 false，不使用伪造 ID
+        if (string.IsNullOrEmpty(headerUserId))
+        {
+            userId = Guid.Empty;
+            return false;
+        }
+
+        // 4. 类型转换
+        return Guid.TryParse(headerUserId, out userId);
     }
 
 }

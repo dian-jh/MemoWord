@@ -1,96 +1,200 @@
-import { AxiosResponse } from '@ohos/axios'
-import { createPost, login, sendCode } from '../http/Api'
-import { promptAction, router, Router } from '@kit.ArkUI'
-import emitter from '@ohos.events.emitter';
+import { BusinessError } from '@ohos.base';
+import { AxiosResponse } from '@ohos/axios';
+import {
+  login,
+  LoginReq,
+  LoginResult
+} from '../http/Api';
+import { promptAction, router } from '@kit.ArkUI';
 
 @Entry
 @Component
 struct LoginPage {
-  @State phone: string = ""
-  @State code: string = ""
-  @StorageLink('token') token: string = ''
-  @StorageLink('currentTabIndex') currentTabIndex: number = 0;
+  @State phone: string = '';
+  @State password: string = '';
+  @State isAgreeChecked: boolean = false;
+  @StorageLink('token') token: string = '';
+
+  aboutToAppear() {
+    AppStorage.setOrCreate('token', '');
+  }
 
   build() {
     Column() {
-      Image($r("app.media.ic_back"))
-        .width(25)
-        .height(25)
+      // 返回按钮
+      Image($r('app.media.ic_back'))
+        .width(24)
+        .height(24)
+        .margin({ top: 16, left: 20 })
         .alignSelf(ItemAlign.Start)
-        .margin({ left: 20, top: 10 })
-        .onClick(() => {
-          //todo 返回上一页
-          router.back()
-        })
+        .onClick(() => this.goBack());
 
-      Blank()
-      Column() {
-        Text('欢迎登陆').fontSize(22).fontColor(Color.Black).fontWeight(FontWeight.Bold)
-        Row() {
-          Image($r('app.media.ic_phone')).letterIconStyle()
-          TextInput({ placeholder: "请输入手机号码", text: this.phone }).inputStyle().onChange((value) => {
-            this.phone = value
-          })
-        }.margin({ top: 30 })
+      // 内容区
+      Scroll() {
+        Column({ space: 20 }) {
+          // 标题
+          Text('欢迎登录')
+            .fontSize(24)
+            .fontWeight(FontWeight.Bold)
+            .fontColor('#1D2129')
+            .margin({ top: 20, bottom: 10 });
 
-        Divider().color(Color.Black)
+          // 手机号输入（用容器 + 底部边框实现）
+          Column({ space: 8 }) {
+            Text('账号/手机号')
+              .fontSize(14)
+              .fontColor('#4E5969')
+              .width('100%');
 
-        Row() {
-          Image($r('app.media.ic_code'))
-            .iconStyle()
-          TextInput({ placeholder: "请输入验证码", text: this.code }).inputStyle().onChange((value) => {
-            this.code = value
-          })
-          Button('获取验证码').buttonStyle1(Color.White, Color.Black).onClick(async () => {
-            // 获取验证码
-            let response: AxiosResponse = await sendCode(this.phone)
-            this.code = response.data.data
-          })
-        }.margin({ top: 20 })
-
-        Divider().margin({ right: 120 }).color(Color.Black)
-
-
-        Button('立即登陆')
+            TextInput({ placeholder: '请输入账号/手机号', text: this.phone })
+              .height(44)
+              .fontSize(15)
+              .backgroundColor(Color.Transparent)
+              .onChange(v => this.phone = v);
+          }
           .width('100%')
-          .buttonStyle1(Color.Black, Color.White)
-          .margin({ top: 50 })
-          .onClick(async () => {
-            // 登陆
-            let response: AxiosResponse = await login(this.phone, this.code)
-            this.token = response.data.data
-            console.log("token:" + this.token)
-            if (this.currentTabIndex === 0) {
-              // todo 发送打卡请求
-              let params = router.getParams()
-              await createPost({
-                rightCount: Reflect.get(params, 'rightCount'),
-                answeredCount: Reflect.get(params, 'answeredCount'),
-                timeUsed: Reflect.get(params, 'timeUsed')
-              })
-              promptAction.showToast({ message: '打卡成功  ' })
-              emitter.emit({ eventId: 1 })
-              // todo 跳转打卡圈
-              this.currentTabIndex = 1
-            }
-            router.back()
-          })
-        Row() {
-          Text('登陆即表示已同意').fontSize(10).fontColor('#546B9D')
-          Text('《用户使用协议》').fontSize(10).fontColor('#00B3FF')
-        }.margin({ top: 20 })
-      }.loginBoxStyle()
+          .padding({ bottom: 8 })
+          .border({ width: { bottom: 1 }, color: '#E5E6EB' });
 
-      Row({ space: 10 }) {
-        Image($r('app.media.ic_logo')).width(36).height(36)
-        Text('快速记单词神器').fontColor('#546B9D').fontWeight(FontWeight.Bold).fontSize(20)
-      }.margin({ top: 70 })
+          // 密码输入（用容器 + 底部边框实现）
+          Column({ space: 8 }) {
+            Text('密码')
+              .fontSize(14)
+              .fontColor('#4E5969')
+              .width('100%');
 
-      Text('Developed by Atguigu').fontSize(12).margin(20).fontColor('#546B9D')
-    }.loginStyle()
+            TextInput({ placeholder: '请输入密码', text: this.password })
+              .type(InputType.Password)
+              .height(44)
+              .fontSize(15)
+              .backgroundColor(Color.Transparent)
+              .onChange(v => this.password = v);
+          }
+          .width('100%')
+          .padding({ bottom: 8 })
+          .border({ width: { bottom: 1 }, color: '#E5E6EB' });
+
+          // 登录按钮
+          Button('立即登录')
+            .width('100%')
+            .height(44)
+            .backgroundColor(this.isAgreeChecked ? '#0066CC' : '#C9CDD4')
+            .fontColor(Color.White)
+            .fontSize(16)
+            .borderRadius(8)
+            .margin({ top: 20 })
+            .enabled(this.isAgreeChecked)
+            .onClick(async () => await this.handleLogin());
+
+          // 注册按钮
+          Button('注册账号')
+            .width('100%')
+            .height(44)
+            .backgroundColor(Color.White)
+            .fontColor('#0066CC')
+            .fontSize(16)
+            .border({ width: 1, color: '#0066CC', radius: 8 })
+            .margin({ top: 12 })
+            .onClick(() => this.goToRegister());
+
+          // 协议勾选区域
+          Row({ space: 8 }) {
+            Checkbox({ name: 'agree' })
+              .width(16)
+              .height(16)
+              .selectedColor('#0066CC')
+              .onChange(v => this.isAgreeChecked = v);
+
+            Text('登录即表示已同意')
+              .fontSize(12)
+              .fontColor('#86909C');
+
+            Text('《用户使用协议》')
+              .fontSize(12)
+              .fontColor('#0066CC')
+              .onClick(() => {
+                promptAction.showToast({ message: '协议页面开发中' });
+              });
+          }
+          .margin({ top: 16 })
+          .justifyContent(FlexAlign.Center);
+        }
+        .width('100%')
+        .padding({ left: 24, right: 24, bottom: 40 });
+      }
+      .layoutWeight(1);
+
+      // 底部品牌
+      Column({ space: 8 }) {
+        Image($r('app.media.ic_logo'))
+          .width(36)
+          .height(36);
+        Text('快速记单词神器')
+          .fontSize(16)
+          .fontColor('#4E5969')
+          .fontWeight(FontWeight.Medium);
+      }
+      .margin({ bottom: 24 });
+    }
+    .width('100%')
+    .height('100%')
+    .backgroundColor('#F7F8FA')
+  }
+
+  // 登录逻辑
+  private async handleLogin(): Promise<void> {
+    if (!this.phone.trim() || !this.password.trim()) {
+      promptAction.showToast({ message: '账号或密码不能为空' });
+      return;
+    }
+
+    try {
+      const param: LoginReq = {
+        account: this.phone.trim(),
+        password: this.password.trim()
+      };
+      const res: AxiosResponse<LoginResult> = await login(param);
+      const result: LoginResult = res.data;
+
+      if (result.code === 1 && result.data) {
+        AppStorage.set('token', result.data.accessToken);
+        promptAction.showToast({ message: '登录成功' });
+        this.goToIndex();
+      } else {
+        promptAction.showToast({ message: result.msg || '登录失败，请检查账号密码' });
+      }
+    } catch (err) {
+      const error = err as BusinessError;
+      console.error('登录异常：', error.message);
+      promptAction.showToast({ message: '网络异常，请稍后重试' });
+    }
+  }
+
+  // 跳转首页
+  private goToIndex(): void {
+    router.replaceUrl({ url: 'pages/Index' })
+      .catch((err: BusinessError) => {
+        console.error('跳转首页失败：', err.message);
+        promptAction.showToast({ message: '页面跳转失败' });
+      });
+  }
+
+  // 跳转注册
+  private goToRegister(): void {
+    router.pushUrl({ url: 'pages/RegisterPage' })
+      .catch((err: BusinessError) => {
+        console.error('跳转注册页失败：', err.message);
+        promptAction.showToast({ message: '注册页面跳转失败' });
+      });
+  }
+
+  // 返回
+  private goBack(): void {
+    router.back();
   }
 }
 
+// 样式定义
 @Extend(Button)
 function buttonStyle1(bgColor: Color, fontColor: Color) {
   .type(ButtonType.Normal)
@@ -118,7 +222,8 @@ function inputStyle() {
 
 @Styles
 function letterIconStyle() {
-  .width(24).height(24)
+  .width(24)
+  .height(24)
 }
 
 @Styles
@@ -136,5 +241,4 @@ function loginStyle() {
   .height('100%')
   .backgroundImage($r("app.media.img_login_bg"))
   .backgroundImageSize({ width: '100%', height: '100%' })
-
 }
