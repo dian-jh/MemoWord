@@ -8,12 +8,11 @@ import { StudyMode } from './PracticePage'
 
 @Entry
 @Component
-struct FavoritePage {
+struct RawWordPage {
   @State favoriteList: FavoriteWord[] = [];
   @State isLoading: boolean = true;
-  @State sortType: number = 0; // 0:时间顺序, 1:时间逆序, 2:字母顺序, 3:字母逆序
+  @State sortType: number = 0;
 
-  // 颜色常量（沿用项目主题色）
   private readonly PRIMARY_COLOR: string = '#1B9680';
   private readonly BG_COLOR: string = '#F8F7F2';
 
@@ -21,7 +20,6 @@ struct FavoritePage {
     await this.loadData();
   }
 
-  // 加载数据
   async loadData() {
     this.isLoading = true;
     try {
@@ -35,7 +33,6 @@ struct FavoritePage {
     }
   }
 
-  // 排序逻辑
   private sortData() {
     if (this.sortType === 0) {
       this.favoriteList.sort((a, b) => new Date(a.createTime).getTime() - new Date(b.createTime).getTime());
@@ -48,83 +45,66 @@ struct FavoritePage {
     }
   }
 
-  // 取消收藏操作
-  async handleToggleFavorite(item: FavoriteWord) {
-    try {
-      const isFav = await toggleFavorite(item.wordId);
-      if (!isFav) {
-        // 如果取消成功，从当前 UI 列表移除
-        this.favoriteList = this.favoriteList.filter(v => v.wordId !== item.wordId);
-        promptAction.showToast({ message: '已移出生词本' });
-      }
-    } catch (e) {
-      promptAction.showToast({ message: '操作失败' });
-    }
-  }
-
   build() {
-    // 根容器
+    // 【关键改动 1】根容器必须设置 alignItems 为 Start，justifyContent 为 Start
     Column() {
-      // 1. 导航栏 - 显式固定高度
+      // 1. 顶部导航
       this.navBarBuilder()
 
-      // 2. 核心修正：使用 Stack 或直接 Column 排列
-      // 确保 Scroll 容器能够向上“顶”到导航栏下方
-      Column() {
-        Scroll() {
-          Column({ space: 20 }) {
-            // 这里的 Margin 或 Padding 如果太大，会导致内容下移
-            this.infoCardBuilder()
+      // 2. 滚动区域
+      Scroll() {
+        // 【关键改动 2】这里的 Column 不要设置 space，手动控制间距
+        Column() {
+          // 2.1 统计卡片
+          this.infoCardBuilder()
 
-            this.sortBarBuilder()
+          // 2.2 排序栏
+          this.sortBarBuilder()
 
-            if (this.isLoading) {
-              Text('加载中...').margin({ top: 50 }).fontColor('#999')
-            } else if (this.favoriteList.length === 0) {
-              this.emptyStateBuilder()
-            } else {
-              this.wordListBuilder()
-            }
+          // 2.3 内容主体
+          if (this.isLoading) {
+            Text('加载中...').margin({ top: 30 }).fontColor('#999')
+          } else if (this.favoriteList.length === 0) {
+            this.emptyStateBuilder()
+          } else {
+            this.wordListBuilder()
           }
-          .width('100%')
-          .padding({ top: 10, bottom: 40 }) // 👈 调小这里的 top padding
         }
         .width('100%')
-        .layoutWeight(1) // 👈 占据剩余所有空间
-        .edgeEffect(EdgeEffect.Spring)
-        .scrollBar(BarState.Off)
+        .justifyContent(FlexAlign.Start) // 确保内部子项从顶部开始排
+        .alignItems(HorizontalAlign.Center)
       }
-      .layoutWeight(1)
       .width('100%')
+      .layoutWeight(1) // 撑满剩余屏幕高度
+      .edgeEffect(EdgeEffect.Spring)
+      .scrollBar(BarState.Off)
+      .align(Alignment.Top) // 【关键改动 3】确保 Scroll 内部对齐方式为顶部
     }
     .width('100%')
     .height('100%')
     .backgroundColor(this.BG_COLOR)
-    // ✅ 强制所有子项从最顶部开始，不留任何空白
-    .justifyContent(FlexAlign.Start)
-    .alignItems(HorizontalAlign.Center)
+    .justifyContent(FlexAlign.Start) // 【核心】确保所有子组件从屏幕最上方开始堆叠
   }
 
   @Builder
   navBarBuilder() {
-    // 检查这里是否套了多层容器
     Row() {
       Image($r('app.media.ic_back'))
-        .width(24).height(24)
+        .width(24)
+        .height(24)
         .onClick(() => router.back())
-      // 不要在这里加 Blank()，除非你后面还有组件
     }
     .width('100%')
-    .height(56) // 👈 必须固定高度
+    .height(56) // 稍微加高一点，符合标准导航栏视觉
     .padding({ left: 16, right: 16 })
-    .backgroundColor(this.BG_COLOR) // 保持颜色一致
+    .backgroundColor(this.BG_COLOR)
   }
 
   @Builder
   infoCardBuilder() {
+    // 【关键改动 4】移除所有可能导致下移的 padding-top
     Column() {
       Row({ space: 15 }) {
-        // 1. 左侧封面图
         Image($r('app.media.ic_favorite_cover'))
           .width(80)
           .height(100)
@@ -132,55 +112,40 @@ struct FavoritePage {
           .flexShrink(0)
           .objectFit(ImageFit.Cover)
 
-        // 2. 右侧文字区域：保持正常并自动占据剩余空间
         Column({ space: 8 }) {
           Text('收藏的单词')
             .fontSize(20)
             .fontWeight(FontWeight.Bold)
             .fontColor('#000')
-            .maxLines(1)
-            .textOverflow({ overflow: TextOverflow.Ellipsis })
 
           Text(`单词数: ${this.favoriteList.length}`)
             .fontSize(14)
             .fontColor('#666')
 
-          // 按钮组
-          Row({ space: 10 }) {
-            Button('学习')
-              .height(32)
-              .layoutWeight(1) // 按钮平分右侧剩余空间
-              .backgroundColor(this.PRIMARY_COLOR)
-              .fontSize(13)
-              .borderRadius(16)
-              .onClick(() => {
-                router.pushUrl(({
-                  url: 'pages/PracticePage',
-                  params: {
-                    mode: StudyMode.FAVORITE
-                  }
-                }))
+          Button('学习')
+            .height(32)
+            .width('100%')
+            .backgroundColor(this.PRIMARY_COLOR)
+            .fontSize(13)
+            .borderRadius(16)
+            .onClick(() => {
+              router.pushUrl({
+                url: 'pages/PracticePage',
+                params: { mode: StudyMode.FAVORITE }
               })
-          }
-          .width('100%')
-          .margin({ top: 4 })
+            })
         }
-        .layoutWeight(1) // 【核心】占据除图片外的所有剩余空间，防止文字被顶出屏幕
+        .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
       }
       .width('100%')
       .padding(16)
       .backgroundColor('#FFF')
       .borderRadius(12)
-      .shadow({
-        radius: 12,
-        color: '#10000000',
-        offsetX: 0,
-        offsetY: 6
-      })
+      .shadow({ radius: 10, color: '#0A000000', offsetY: 4 })
     }
     .width('100%')
-    .padding({ left: 16, right: 16 })
+    .padding({ left: 16, right: 16, top: 10, bottom: 8 }) // 仅保留 10 的间距
   }
 
   @Builder
@@ -201,7 +166,7 @@ struct FavoritePage {
       }, (item: string) => item)
     }
     .width('100%')
-    .padding({ left: 16, right: 16 })
+    .padding({ left: 16, right: 16, top: 12, bottom: 12 })
   }
 
   @Builder
@@ -240,12 +205,16 @@ struct FavoritePage {
     }
   }
 
+
   @Builder
   emptyStateBuilder() {
-    Column({ space: 10 }) {
-      Text('生词本空空如也').fontColor('#999')
+    Column() {
+      Text('生词本空空如也')
+        .fontColor('#999')
+        .fontSize(14)
+        .margin({ top: 40 }) // 稍微带一点间距，但绝不居中
     }
     .width('100%')
-    .margin({ top: 100 })
+    .alignItems(HorizontalAlign.Center)
   }
 }

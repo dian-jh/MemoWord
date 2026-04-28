@@ -4,6 +4,8 @@ namespace AiService.WebAPI.DTO;
 
 public sealed class PostSessionMessageRequest
 {
+    public string? SessionKey { get; init; }
+
     [Required]
     [StringLength(4000, MinimumLength = 1)]
     public string Content { get; init; } = string.Empty;

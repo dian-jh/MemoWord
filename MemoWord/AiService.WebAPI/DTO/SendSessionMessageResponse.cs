@@ -4,7 +4,9 @@ public sealed class SendSessionMessageResponse
 {
     public string SessionId { get; init; } = string.Empty;
 
-    public AiChatMessageDto UserMessage { get; init; } = null!;
+    public string Translation { get; init; } = string.Empty;
 
-    public AiChatMessageDto AssistantMessage { get; init; } = null!;
+    public string Analysis { get; init; } = string.Empty;
+
+    public List<CoreWordItemDto> CoreWords { get; init; } = [];
 }

@@ -7,6 +7,4 @@ public sealed class AiChatApiOptions
     public double Temperature { get; init; } = 0.7;
 
     public int HistoryWindow { get; init; } = 20;
-
-    public string? SystemPrompt { get; init; }
 }

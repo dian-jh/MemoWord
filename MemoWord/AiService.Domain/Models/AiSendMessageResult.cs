@@ -9,4 +9,10 @@ public sealed class AiSendMessageResult
     public AiChatMessage UserMessage { get; init; } = null!;
 
     public AiChatMessage AssistantMessage { get; init; } = null!;
+
+    public string Translation { get; init; } = string.Empty;
+
+    public string Analysis { get; init; } = string.Empty;
+
+    public List<AiWordLookupItem> CoreWords { get; init; } = [];
 }

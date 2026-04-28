@@ -36,19 +36,26 @@ public class AiSessionMessagesController : ControllerBase
 
         try
         {
+            var resolvedSessionKey = ResolveSessionKey(sessionId, request.SessionKey);
             var result = await _aiChatDomainService.SendMessageAsync(
                 userId,
-                sessionId,
+                resolvedSessionKey,
                 request.Content,
                 _options.HistoryWindow,
-                _options.SystemPrompt,
                 cancellationToken);
 
             var response = new SendSessionMessageResponse
             {
                 SessionId = result.SessionId,
-                UserMessage = Map(result.UserMessage),
-                AssistantMessage = Map(result.AssistantMessage)
+                Translation = result.Translation,
+                Analysis = result.Analysis,
+                CoreWords = result.CoreWords
+                    .Select(x => new CoreWordItemDto
+                    {
+                        Word = x.Word,
+                        Id = x.Id
+                    })
+                    .ToList()
             };
 
             return Ok(HttpResult<SendSessionMessageResponse>.Success(response));
@@ -56,6 +63,10 @@ public class AiSessionMessagesController : ControllerBase
         catch (ArgumentException ex)
         {
             return BadRequest(HttpResult<SendSessionMessageResponse>.Fail(ex.Message, StatusCodes.Status400BadRequest));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(StatusCodes.Status502BadGateway, HttpResult<SendSessionMessageResponse>.Fail(ex.Message, StatusCodes.Status502BadGateway));
         }
     }
 
@@ -110,5 +121,28 @@ public class AiSessionMessagesController : ControllerBase
         }
 
         return Guid.TryParse(headerUserId, out userId);
+    }
+
+    private static string ResolveSessionKey(string routeSessionKey, string? bodySessionKey)
+    {
+        var routeKey = routeSessionKey?.Trim();
+        var bodyKey = bodySessionKey?.Trim();
+
+        if (string.IsNullOrWhiteSpace(bodyKey))
+        {
+            return routeKey ?? string.Empty;
+        }
+
+        if (string.IsNullOrWhiteSpace(routeKey))
+        {
+            return bodyKey;
+        }
+
+        if (!routeKey.Equals(bodyKey, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ArgumentException("Route sessionId and body sessionKey do not match.");
+        }
+
+        return bodyKey;
     }
 }

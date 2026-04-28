@@ -9,7 +9,8 @@
     "pages/SearchPage",
     "pages/RawWordPage",
     "pages/WordDetailPage",
-    "pages/UpdatePage"
+    "pages/UpdatePage",
+    "pages/RegisterPage"
 
   ]
 }

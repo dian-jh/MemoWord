@@ -47,6 +47,7 @@ builder.Services.AddHttpClient<IAiCompletionProvider, DeepSeekChatClient>(client
     client.BaseAddress = new Uri(deepSeekOptions.Endpoint.TrimEnd('/') + "/");
 });
 builder.Services.AddScoped<IAiChatRepository, AiChatRepository>();
+builder.Services.AddScoped<IAiWordLookupRepository, AiWordLookupRepository>();
 builder.Services.AddScoped<AiChatDomainService>();
 
 builder.Services.AddControllers();

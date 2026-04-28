@@ -37,12 +37,14 @@ struct Index {
       }.tabBar(this.barBuilder(1, '统计', $r('app.media.ic_circle'), $r('app.media.ic_circle_selected')))
 
       TabContent() {
-        MinePage()
-      }.tabBar(this.barBuilder(2, '我的', $r('app.media.ic_mine'), $r('app.media.ic_mine_selected')))
+        AIContent()
+      }.tabBar(this.barBuilder(2, 'AI助手', $r('app.media.ic_ai'), $r('app.media.ic_ai_selected')))
 
       TabContent() {
-        AIContent() // <-- 新增的 AI 模块
-      }.tabBar('AI 助手') // 这里可以改成你想要的图标和文案
+        MinePage()
+      }.tabBar(this.barBuilder(3, '我的', $r('app.media.ic_mine'), $r('app.media.ic_mine_selected')))
+
+
 
 
     }.barPosition(BarPosition.End)

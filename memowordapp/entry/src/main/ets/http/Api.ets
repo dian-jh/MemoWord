@@ -473,93 +473,66 @@ export async function updatePassword(
 
 // ======================== AI 模块模型定义 ========================
 
-/**
- * 消息项定义
- */
 export interface AiChatMessage {
   id: string
-  role: string // 'user' | 'assistant' | 'system'
-  content: string
+  role: string // 'user' | 'assistant'
+  content: string // 注意：此处依然约定为纯文本或 JSON 字符串
   createTime: string
 }
 
-/**
- * 发送消息响应的业务数据 (Data 层)
- */
-export interface SendMessageData {
-  sessionId: string
-  userMessage: AiChatMessage
-  assistantMessage: AiChatMessage
+export interface AiCoreWord {
+  word: string;
+  id?: number; // 设为可选，兼容旧历史数据
 }
 
-/**
- * AI 模块专属包装类：获取消息列表返回
- * 对齐项目中 UserInfoResult 的 code/msg/data 结构
- */
+// POST 请求返回的结构化数据
+export interface AiStructuredContent {
+  sessionId?: string;
+  translation?: string;
+  analysis?: string;
+  // 注意：使用 any[] 是为了兼容旧数据可能是 string[]，新数据是 AiCoreWord[]
+  coreWords?: (string | AiCoreWord)[];
+}
+
 export interface AiMessagesResult {
   code: number
-  message: string // 保持与 AI 后端返回字段一致
+  message: string
   data: AiChatMessage[]
 }
 
-/**
- * AI 模块专属包装类：发送消息返回
- */
 export interface SendMessageResult {
   code: number
   message: string
-  data: SendMessageData
+  data: AiStructuredContent // 👈 核心修改：对齐最新的 POST 响应 data 结构
 }
 
-// 【核心修复】：为发送消息定义 Request Class，满足 ArkTS 严格对象校验
+// 【请求参数】
 export class SendAiMessageRequest {
+  sessionKey: string
   content: string
-  constructor(content: string) {
+  constructor(sessionKey: string, content: string) {
+    this.sessionKey = sessionKey
     this.content = content
   }
 }
 
 // ======================== AI 模块接口实现 ========================
 
-/**
- * 获取 AI 聊天记录
- * @param sessionId 会话ID
- * @param take 获取条数
- */
-export async function getAiMessages(sessionId: string, take: number = 20): Promise<AiChatMessage[]> {
-  // 显式指定泛型：<返回体, 最终Axios封装体, 参数类型>
+export async function getAiMessages(sessionKey: string, take: number = 20): Promise<AiChatMessage[]> {
   const res: AxiosResponse<AiMessagesResult> = await instance.get<AiMessagesResult, AxiosResponse<AiMessagesResult>>(
-    `/ai/sessions/${sessionId}/messages`,
-    {
-      params: { "take": take }
-    }
+    `/ai/sessions/${sessionKey}/messages`,
+    { params: { "take": take } }
   )
-
-  // 严谨业务校验
-  if (res.data.code !== 200) {
-    throw new Error(res.data.message || '获取 AI 历史记录失败')
-  }
-
+  if (res.data.code !== 200) throw new Error(res.data.message)
   return res.data.data ?? []
 }
 
-/**
- * 发送消息给 AI 并获取回复
- * @param sessionId 会话ID
- * @param content 消息内容
- */
-export async function sendAiMessage(sessionId: string, content: string): Promise<SendMessageData> {
-  const payload = new SendAiMessageRequest(content)
-
+export async function sendAiMessage(sessionKey: string, content: string): Promise<AiStructuredContent> {
+  const payload = new SendAiMessageRequest(sessionKey, content)
   const res: AxiosResponse<SendMessageResult> = await instance.post<SendMessageResult, AxiosResponse<SendMessageResult>>(
-    `/ai/sessions/${sessionId}/messages`,
+    `/ai/sessions/${sessionKey}/messages`,
     payload
   )
-
-  // 严谨业务校验
-  if (res.data.code !== 200) {
-    throw new Error(res.data.message || 'AI 响应失败')
-  }
-
+  if (res.data.code !== 200) throw new Error(res.data.message)
   return res.data.data
 }
