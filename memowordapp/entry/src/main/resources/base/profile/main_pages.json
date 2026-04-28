@@ -3,10 +3,13 @@
     "pages/Index",
     "pages/SplashPage",
     "pages/LoginPage",
-    "pages/PostHistoryPage",
     "pages/StudyIndexPage",
     "pages/PracticePage",
-    "pages/StatisticsPage"
+    "pages/StatisticsPage",
+    "pages/SearchPage",
+    "pages/RawWordPage",
+    "pages/WordDetailPage",
+    "pages/UpdatePage"
 
   ]
 }

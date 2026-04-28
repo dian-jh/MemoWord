@@ -9,45 +9,6 @@ export interface HttpResult<T> {
   data: T
 }
 
-// ======================== 用户与帖子模块接口 (保持原有) ========================
-
-export interface PostCard {
-  rightCount: number
-  answeredCount: number
-  timeUsed: number
-}
-
-export interface PostRecord {
-  id: number
-  postText: string
-  rightCount: number
-  answeredCount: number
-  timeUsed: number
-  createTime: string
-  likeCount: number
-  nickname: string
-  avatarUrl: string
-  isLike: boolean
-}
-
-export interface UserProfile {
-  nickname: string
-  avatarUrl: string
-}
-
-export interface PostPageData {
-  records: PostRecord[]
-  total: number
-}
-
-class LoginBean {
-  phone: string
-  code: string
-  constructor(phone: string, code: string) {
-    this.phone = phone
-    this.code = code
-  }
-}
 
 // ======================== 学习统计与单词模块 (严格类型定义) ========================
 
@@ -101,7 +62,7 @@ export class SetTodayStudyDurationRequest {
 // ======================== 搜索模块 ========================
 
 export interface SearchWordResult {
-  wordId: number
+  id: number
   wordContent: string
   phoneticUs: string | null
   translation: string | null
@@ -128,40 +89,187 @@ export interface FavoriteWord {
   isFavorite: boolean
 }
 
+// ======================== 1. 强制定义的业务模型 ========================
 
-// ======================== API 请求方法 ========================
-
-// --- 用户与帖子 API (保持原有) ---
-export function sendCode(phone: string): Promise<AxiosResponse<HttpResult<string>>> {
-  return instance.get('/word/user/code', { params: { phone: phone } })
+export interface AuthUserInfo {
+  id: string
+  username: string
+  account: string
+  avatarUrl: string
+  createTime?: string
+  targetWords: number
+}
+// 修改用户每日目标单词数
+export function updateTargetWords(num: number): Promise<AxiosResponse<string>> {
+  return instance.put<string, AxiosResponse<string>>(`/api/v1/users/updatetargetwords/${num}`);
 }
 
-export function login(phone: string, code: string): Promise<AxiosResponse<HttpResult<string>>> {
-  return instance.post('/word/user/login', new LoginBean(phone, code))
+
+
+export interface LoginRes {
+  accessToken: string
+  refreshToken: string
+  expiresInSec: number
+  user: AuthUserInfo
 }
 
-export function getAllPost(page: number, size: number): Promise<AxiosResponse<HttpResult<PostPageData>>> {
-  return instance.get('/word/post/getAll', { params: { page: page, size: size } })
+export interface RegisterRes {
+  userId: string
 }
 
-export function like(postId: number): Promise<AxiosResponse<HttpResult<boolean>>> {
-  return instance.get('/word/like/create', { params: { postId: postId } })
+export interface UpdateUserRes {
+  updated: boolean
 }
 
-export function cancelLike(postId: number): Promise<AxiosResponse<HttpResult<boolean>>> {
-  return instance.get('/word/like/cancel', { params: { postId: postId } })
+export interface LogoutRes {
+  loggedOut: boolean
 }
 
-export function info(): Promise<AxiosResponse<HttpResult<UserProfile>>> {
-  return instance.get('/word/user/info')
+export interface PostPageData {
+  records: PostRecord[]
+  total: number
 }
 
-export function getMyPost(page: number, size: number): Promise<AxiosResponse<HttpResult<PostPageData>>> {
-  return instance.get('/word/post/getMine', { params: { page: page, size: size } })
+export interface PostRecord {
+  id: number
+  postText: string
+  rightCount: number
+  answeredCount: number
+  timeUsed: number
+  createTime: string
+  likeCount: number
+  nickname: string
+  avatarUrl: string
+  isLike: boolean
 }
 
-export function createPost(post: PostCard): Promise<AxiosResponse<HttpResult<boolean>>> {
-  return instance.post('/word/post/create', post)
+// ======================== 2. 强制定义的后端包装类 (消除 <T>) ========================
+
+export interface UserInfoResult {
+  code: number
+  msg: string | null
+  data: AuthUserInfo
+}
+
+export interface LoginResult {
+  code: number
+  msg: string | null
+  data: LoginRes
+}
+
+export interface RegisterResult {
+  code: number
+  msg: string | null
+  data: RegisterRes
+}
+
+export interface UpdateUserResult {
+  code: number
+  msg: string | null
+  data: UpdateUserRes
+}
+
+export interface PostPageResult {
+  code: number
+  msg: string | null
+  data: PostPageData
+}
+
+export interface BooleanResult {
+  code: number
+  msg: string | null
+  data: boolean
+}
+
+export interface StringResult {
+  code: number
+  msg: string | null
+  data: string
+}
+
+// ======================== 3. 请求参数模型 ========================
+
+export interface LoginReq {
+  account: string
+  password: string
+}
+
+export interface RegisterReq {
+  account: string
+  username: string
+  password: string
+}
+
+export interface UpdateUserReq {
+  username: string
+  avatarUrl?: string
+}
+
+
+// ======================== 4. 接口实现 (无解包逻辑，手动构建) ========================
+
+// 登录：直接返回包装类
+export function login(data: LoginReq): Promise<AxiosResponse<LoginResult>> {
+  return instance.post<LoginResult, AxiosResponse<LoginResult>>('/api/v1/auth/login', data)
+}
+
+// 注册：直接返回包装类
+export function register(data: RegisterReq): Promise<AxiosResponse<RegisterResult>> {
+  return instance.post<RegisterResult, AxiosResponse<RegisterResult>>('/api/v1/auth/registry', data)
+}
+
+/**
+ * 获取当前用户
+ * ✅ 解决 ...res 爆红：手动提取属性构建新对象
+ * ✅ 解决泛型爆红：使用 UserInfoResult
+ */
+export async function info(): Promise<AxiosResponse<AuthUserInfo>> {
+  const res: AxiosResponse<UserInfoResult> = await instance.get<UserInfoResult, AxiosResponse<UserInfoResult>>('/api/v1/users/me')
+
+  if (res.data.code !== 1) {
+    throw new Error(res.data.msg || '获取用户信息失败')
+  }
+
+  // ArkTS 不允许 ...res，必须手动赋值
+  const finalResponse: AxiosResponse<AuthUserInfo> = {
+    data: res.data.data, // 将包装里的 data 提取出来
+    status: res.status,
+    statusText: res.statusText,
+    headers: res.headers,
+    config: res.config
+  }
+  return finalResponse
+}
+
+// 更新用户信息
+export async function updateMe(data: UpdateUserReq): Promise<AxiosResponse<UpdateUserRes>> {
+  const res: AxiosResponse<UpdateUserResult> = await instance.put<UpdateUserResult, AxiosResponse<UpdateUserResult>>('/api/v1/users/updateme', data)
+
+  if (res.data.code !== 1) {
+    throw new Error(res.data.msg || '更新失败')
+  }
+
+
+  // 2. 核心逻辑：只要后端 code 是 1，我们就给页面返回 updated: true
+  const isUpdateSuccess = res.data.code === 1;
+
+  // 3. 构建页面需要的标准格式，屏蔽后端 data 字段的差异
+  const adaptedData: UpdateUserRes = {
+    updated: isUpdateSuccess
+  }
+  const finalResponse: AxiosResponse<UpdateUserRes> = {
+    data: adaptedData,
+    status: res.status,
+    statusText: res.statusText,
+    headers: res.headers,
+    config: res.config
+  }
+  return finalResponse
+}
+
+// 退出登录
+export function logout(): Promise<AxiosResponse<LogoutRes>> {
+  return instance.post<LogoutRes, AxiosResponse<LogoutRes>>('/api/v1/auth/logout')
 }
 
 
@@ -289,4 +397,74 @@ export async function getFavoriteList(): Promise<FavoriteWord[]> {
     item.isFavorite = true
     return item
   })
+}
+
+
+
+// ======================== 搜索历史模块 ========================
+
+// 1. 定义搜索历史专用 DTO（继承自 SearchWordResult）
+export interface SearchHistoryDto extends SearchWordResult {
+  createTime: string;
+}
+
+// 2. 由于后端 AddHistory 使用 [FromBody] int wordId，
+// 在 ArkTS 中发送 POST 原生类型建议包装或直接传递数字（根据 Axios 插件版本确定）
+// 这里为了类型严谨，直接定义 API 函数的入参类型
+export async function addSearchHistory(wordId: number): Promise<boolean> {
+  // 发送一个标准的 JSON 对象 { "wordId": 123 }
+  // 这符合 NETSTACK 对 "object" 类型要求
+  const res: AxiosResponse<BooleanResult> = await instance.post<BooleanResult>(
+    '/word/study/history',
+    { "wordId": wordId }
+  );
+  return res.data.code === 1;
+}
+
+/**
+ * 获取搜索历史列表
+ */
+export async function getSearchHistory(): Promise<SearchHistoryDto[]> {
+  const res: AxiosResponse<HttpResult<SearchHistoryDto[]>> =
+    await instance.get<HttpResult<SearchHistoryDto[]>>('/word/study/history');
+
+  // 确保返回的是数组，避免 null 导致的类型错误
+  return res.data.data ?? [];
+}
+
+/**
+ * 清空搜索历史
+ */
+export async function clearSearchHistory(): Promise<boolean> {
+  const res: AxiosResponse<BooleanResult> = await instance.delete<BooleanResult, AxiosResponse<BooleanResult>>('/word/study/history');
+  return res.data.code === 1;
+}
+
+
+
+
+// 修改密码请求体
+export interface UpdatePasswordReq {
+  oldPassword: string;   // 原密码
+  newPassword: string;   // 新密码
+  // confirmPassword: string; // 确认新密码
+}
+// 修改密码接口返回结果
+export interface UpdatePasswordRes {
+  code: number;
+  msg: string;
+  data?: null; // 一般改密码成功不需要返回数据，用null占位
+}
+//修改密码
+export async function updatePassword(
+  data: UpdatePasswordReq
+): Promise<AxiosResponse<UpdatePasswordRes>> {
+  const res: AxiosResponse<UpdatePasswordRes> = await instance.put<UpdatePasswordRes>(
+    '/api/v1/users/updatepassword', // 接口路径可按你后端实际情况调整
+    data
+  );
+  if (res.data.code !== 1) {
+    throw new Error(res.data.msg || '修改密码失败');
+  }
+  return res;
 }

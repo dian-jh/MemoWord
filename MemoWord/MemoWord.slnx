@@ -4,6 +4,7 @@
     <Project Path="WordService.Infrastructure/WordService.Infrastructure.csproj" />
     <Project Path="WordService.WebAPI/WordService.WebAPI.csproj" />
   </Folder>
+  <Project Path="APIgateway/APIgateway.csproj" />
   <Project Path="MemoWord.AppHost/MemoWord.AppHost.csproj" />
   <Project Path="MemoWord.ServiceDefaults/MemoWord.ServiceDefaults.csproj" />
 </Solution>

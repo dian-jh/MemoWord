@@ -38,5 +38,42 @@
     "D:\\AppData\\Developer\\NuGet\\pomelo.entityframeworkcore.mysql\\9.0.0\\pomelo.entityframeworkcore.mysql.9.0.0.nupkg.sha512",
     "D:\\AppData\\Developer\\NuGet\\scalar.aspnetcore\\2.14.1\\scalar.aspnetcore.2.14.1.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "包 \"OpenTelemetry.Api\" 1.14.0 具有已知的 中 严重性漏洞，https://github.com/advisories/GHSA-g94r-2vxg-569j",
+      "projectPath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\WordService.WebAPI\\WordService.WebAPI.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\WordService.WebAPI\\WordService.WebAPI.csproj",
+      "libraryId": "OpenTelemetry.Api",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "包 \"OpenTelemetry.Exporter.OpenTelemetryProtocol\" 1.14.0 具有已知的 中 严重性漏洞，https://github.com/advisories/GHSA-mr8r-92fq-pj8p",
+      "projectPath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\WordService.WebAPI\\WordService.WebAPI.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\WordService.WebAPI\\WordService.WebAPI.csproj",
+      "libraryId": "OpenTelemetry.Exporter.OpenTelemetryProtocol",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "包 \"OpenTelemetry.Exporter.OpenTelemetryProtocol\" 1.14.0 具有已知的 中 严重性漏洞，https://github.com/advisories/GHSA-q834-8qmm-v933",
+      "projectPath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\WordService.WebAPI\\WordService.WebAPI.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\CSharp\\vs2026\\code\\MemoWord\\MemoWord\\WordService.WebAPI\\WordService.WebAPI.csproj",
+      "libraryId": "OpenTelemetry.Exporter.OpenTelemetryProtocol",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
 }

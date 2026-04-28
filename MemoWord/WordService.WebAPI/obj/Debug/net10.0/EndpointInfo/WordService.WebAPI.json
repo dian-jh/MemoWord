@@ -7,10 +7,10 @@
   },
   "servers": [
     {
-      "url": "https://[::]:51574"
+      "url": "https://localhost:56817"
     },
     {
-      "url": "http://[::]:51575"
+      "url": "http://localhost:56818"
     }
   ],
   "paths": {
@@ -80,6 +80,109 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HttpResultOfListOfFavoriteWordModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/word/study/history": {
+      "post": {
+        "tags": [
+          "SearchHistory"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddHistoryRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddHistoryRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddHistoryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfboolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfboolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfboolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "SearchHistory"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfListOfSearchHistoryDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfListOfSearchHistoryDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfListOfSearchHistoryDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "SearchHistory"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfboolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfboolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResultOfboolean"
                 }
               }
             }
@@ -484,6 +587,19 @@
   },
   "components": {
     "schemas": {
+      "AddHistoryRequest": {
+        "type": "object",
+        "properties": {
+          "wordId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
       "DailyStudyRecordDto": {
         "type": "object",
         "properties": {
@@ -678,6 +794,31 @@
           }
         }
       },
+      "HttpResultOfListOfSearchHistoryDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SearchHistoryDto"
+            }
+          }
+        }
+      },
       "HttpResultOfListOfWordWithFavoriteModel": {
         "type": "object",
         "properties": {
@@ -726,6 +867,38 @@
                 "$ref": "#/components/schemas/WordWithFavoriteModel"
               }
             ]
+          }
+        }
+      },
+      "SearchHistoryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "wordContent": {
+            "type": "string"
+          },
+          "phoneticUs": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "translation": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -929,6 +1102,9 @@
   "tags": [
     {
       "name": "Favorite"
+    },
+    {
+      "name": "SearchHistory"
     },
     {
       "name": "Study"

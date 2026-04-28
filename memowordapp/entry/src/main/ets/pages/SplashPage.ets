@@ -11,7 +11,7 @@ struct SplashPage {
     animateTo({
       duration: 1000, onFinish: () => {
         setTimeout(() => {
-          router.replaceUrl({ url: 'pages/Index' })
+          router.replaceUrl({ url: 'pages/LoginPage' })
         }, 200)
       }
     }, () => {
