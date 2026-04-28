@@ -1,0 +1,6 @@
+@AiService.WebAPI_HostAddress = http://localhost:5288
+
+GET {{AiService.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

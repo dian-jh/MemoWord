@@ -31,6 +31,7 @@
       "targets": [
         {
           "name": "default",
+          // 👇 关键修复：这里必须改为 applyToProducts
           "applyToProducts": [
             "default"
           ]

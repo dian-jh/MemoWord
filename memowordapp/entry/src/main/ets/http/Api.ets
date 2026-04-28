@@ -468,3 +468,98 @@ export async function updatePassword(
   }
   return res;
 }
+
+
+
+// ======================== AI 模块模型定义 ========================
+
+/**
+ * 消息项定义
+ */
+export interface AiChatMessage {
+  id: string
+  role: string // 'user' | 'assistant' | 'system'
+  content: string
+  createTime: string
+}
+
+/**
+ * 发送消息响应的业务数据 (Data 层)
+ */
+export interface SendMessageData {
+  sessionId: string
+  userMessage: AiChatMessage
+  assistantMessage: AiChatMessage
+}
+
+/**
+ * AI 模块专属包装类：获取消息列表返回
+ * 对齐项目中 UserInfoResult 的 code/msg/data 结构
+ */
+export interface AiMessagesResult {
+  code: number
+  message: string // 保持与 AI 后端返回字段一致
+  data: AiChatMessage[]
+}
+
+/**
+ * AI 模块专属包装类：发送消息返回
+ */
+export interface SendMessageResult {
+  code: number
+  message: string
+  data: SendMessageData
+}
+
+// 【核心修复】：为发送消息定义 Request Class，满足 ArkTS 严格对象校验
+export class SendAiMessageRequest {
+  content: string
+  constructor(content: string) {
+    this.content = content
+  }
+}
+
+// ======================== AI 模块接口实现 ========================
+
+/**
+ * 获取 AI 聊天记录
+ * @param sessionId 会话ID
+ * @param take 获取条数
+ */
+export async function getAiMessages(sessionId: string, take: number = 20): Promise<AiChatMessage[]> {
+  // 显式指定泛型：<返回体, 最终Axios封装体, 参数类型>
+  const res: AxiosResponse<AiMessagesResult> = await instance.get<AiMessagesResult, AxiosResponse<AiMessagesResult>>(
+    `/ai/sessions/${sessionId}/messages`,
+    {
+      params: { "take": take }
+    }
+  )
+
+  // 严谨业务校验
+  if (res.data.code !== 200) {
+    throw new Error(res.data.message || '获取 AI 历史记录失败')
+  }
+
+  return res.data.data ?? []
+}
+
+/**
+ * 发送消息给 AI 并获取回复
+ * @param sessionId 会话ID
+ * @param content 消息内容
+ */
+export async function sendAiMessage(sessionId: string, content: string): Promise<SendMessageData> {
+  const payload = new SendAiMessageRequest(content)
+
+  const res: AxiosResponse<SendMessageResult> = await instance.post<SendMessageResult, AxiosResponse<SendMessageResult>>(
+    `/ai/sessions/${sessionId}/messages`,
+    payload
+  )
+
+  // 严谨业务校验
+  if (res.data.code !== 200) {
+    throw new Error(res.data.message || 'AI 响应失败')
+  }
+
+  return res.data.data
+}

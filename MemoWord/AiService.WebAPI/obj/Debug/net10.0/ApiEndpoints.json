@@ -1,0 +1,64 @@
+[
+  {
+    "ContainingType": "AiService.WebAPI.Controllers.AiSessionMessagesController",
+    "Method": "SendMessageAsync",
+    "RelativePath": "ai/sessions/{sessionId}/messages",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "sessionId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "AiService.WebAPI.DTO.PostSessionMessageRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "AiService.WebAPI.Common.HttpResult\u00601[[AiService.WebAPI.DTO.SendSessionMessageResponse, AiService.WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "AiService.WebAPI.Controllers.AiSessionMessagesController",
+    "Method": "GetMessagesAsync",
+    "RelativePath": "ai/sessions/{sessionId}/messages",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "sessionId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "take",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "AiService.WebAPI.Common.HttpResult\u00601[[System.Collections.Generic.List\u00601[[AiService.WebAPI.DTO.AiChatMessageDto, AiService.WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  }
+]
