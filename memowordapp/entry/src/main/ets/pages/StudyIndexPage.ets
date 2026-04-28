@@ -86,25 +86,43 @@ struct StudyIndexPage {
   }
 
   /**
+   * 检查目标是否已完成
+   */
+  private isGoalFinished(): boolean {
+    return this.todayTarget > 0 && this.learnedCount >= this.todayTarget;
+  }
+
+  /**
    * 保存设置今日目标
    */
   private async saveTodayTarget() {
-    const target = parseInt(this.inputTarget.trim())
+    const target = parseInt(this.inputTarget.trim());
+
+    // 1. 基础合法性校验
     if (isNaN(target) || target <= 0) {
-      promptAction.showToast({ message: '请输入有效的数字' })
-      return
+      promptAction.showToast({ message: '请输入有效的数字' });
+      return;
+    }
+
+    // 2. ✅ 硬性逻辑拦截：如果是“再来一组”，输入值必须 > 当前目标
+    if (this.isGoalFinished()) {
+      if (target <= this.todayTarget) {
+        // 这里的 return 非常关键，它保证了代码不会向下执行 API 调用
+        promptAction.showToast({ message: `数值必须大于 ${this.todayTarget}，修改失败` });
+        return;
+      }
     }
 
     try {
-      await setTodayTargetCount(target)
-      this.todayTarget = target
-      this.showSetTargetDialog = false
-      promptAction.showToast({ message: '目标设置成功！' })
+      await setTodayTargetCount(target);
+      this.todayTarget = target;
+      AppStorage.setOrCreate(StorageKeys.TOTAL_GOAL, target);
+      this.showSetTargetDialog = false;
+      promptAction.showToast({ message: '目标已更新' });
     } catch (e) {
-      promptAction.showToast({ message: '设置失败，请重试' })
+      promptAction.showToast({ message: '同步失败，请重试' });
     }
   }
-
   /**
    * 计算剩余单词
    */
@@ -233,34 +251,44 @@ struct StudyIndexPage {
       Column() {}.layoutWeight(1)
 
       // 开始背单词主按钮
-      Button(this.todayTarget > 0 ? '开始背单词' : '设置每日学习目标')
+      Button(this.todayTarget === 0 ? '设置每日学习目标' : (this.isGoalFinished() ? '再来一组吧' : '开始背单词'))
         .width('84%')
         .height(66)
         .fontSize(21)
         .fontWeight(FontWeight.Bold)
-        .backgroundColor('#1FBE93')
+        .backgroundColor(this.isGoalFinished() ? '#FFA500' : '#1FBE93') // 完成后换成橘色提醒
         .borderRadius(33)
         .margin({ bottom: 60 })
-        .shadow({ radius: 12, color: '#1FBE9330', offsetX: 0, offsetY: 8 })
+        .shadow({ radius: 12, color: '#00000010', offsetX: 0, offsetY: 8 })
         .onClick(() => {
-          if (this.todayTarget > 0) {
-            router.pushUrl({ url: 'pages/PracticePage' })
-          } else {
-            // 直接弹出设置框
+          if (this.todayTarget === 0) {
+            // 初次设置
             this.inputTarget = ''
             this.showSetTargetDialog = true
+          } else if (this.isGoalFinished()) {
+            // 已完成目标，点击“再来一组”弹出修改框
+            this.inputTarget = ''
+            this.showSetTargetDialog = true
+            promptAction.showToast({ message: '请设定一个更高的目标' })
+          } else {
+            // 正常背单词
+            router.pushUrl({ url: 'pages/PracticePage' })
           }
         })
 
       // ====================== 目标设置弹窗（包进根Column里） ======================
       if (this.showSetTargetDialog) {
         Column() {
-          Text('设置今日学习目标')
+          Text(this.isGoalFinished() ? '加点量，再来一组' : '设置今日学习目标')
             .fontSize(20)
             .fontWeight(FontWeight.Bold)
             .margin({ bottom: 20, top: 24 })
 
-          TextInput({ text: this.inputTarget, placeholder: '请输入数字（如 50）' })
+          if (this.isGoalFinished()) {
+            Text(`当前已完成: ${this.learnedCount}`).fontSize(14).fontColor('#999').margin({ bottom: 10 })
+          }
+
+          TextInput({ text: this.inputTarget, placeholder: this.isGoalFinished() ? `需大于 ${this.todayTarget}` : '请输入数字' })
             .width('80%')
             .height(50)
             .textAlign(TextAlign.Center)
@@ -271,35 +299,27 @@ struct StudyIndexPage {
 
           Row({ space: 20 }) {
             Button('取消')
-              .width(120)
-              .height(50)
-              .backgroundColor('#eee')
-              .fontColor('#333')
-              .onClick(() => {
-                this.showSetTargetDialog = false
-              })
+              .width(120).height(50).backgroundColor('#eee').fontColor('#333')
+              .onClick(() => { this.showSetTargetDialog = false })
 
             Button('确定')
-              .width(120)
-              .height(50)
-              .backgroundColor('#1FBE93')
-              .onClick(() => {
-                this.saveTodayTarget()
-              })
+              .width(120).height(50).backgroundColor('#1FBE93')
+              .onClick(() => { this.saveTodayTarget() })
           }
         }
+        // ✅ 修正：这是弹窗 Column 的样式和定位
         .width('90%')
         .backgroundColor('#fff')
         .borderRadius(20)
         .alignItems(HorizontalAlign.Center)
         .position({ left: '5%', top: '25%' })
         .shadow({ radius: 10, color: '#00000010' })
-      }
-    }
+      } // 这是 if (this.showSetTargetDialog) 的结束括号
+    } // 这是 build() 内部最外层 Column 的结束括号
     .width('100%')
     .height('100%')
     .backgroundColor('#F8F7F2')
-  }
-}
+  } // 这是 build() 函数的结束括号
+} // 这是 struct StudyIndexPage 的结束括号
 
 export { StudyIndexPage };
