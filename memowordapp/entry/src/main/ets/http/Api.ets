@@ -468,3 +468,71 @@ export async function updatePassword(
   }
   return res;
 }
+
+
+
+// ======================== AI 模块模型定义 ========================
+
+export interface AiChatMessage {
+  id: string
+  role: string // 'user' | 'assistant'
+  content: string // 注意：此处依然约定为纯文本或 JSON 字符串
+  createTime: string
+}
+
+export interface AiCoreWord {
+  word: string;
+  id?: number; // 设为可选，兼容旧历史数据
+}
+
+// POST 请求返回的结构化数据
+export interface AiStructuredContent {
+  sessionId?: string;
+  translation?: string;
+  analysis?: string;
+  // 注意：使用 any[] 是为了兼容旧数据可能是 string[]，新数据是 AiCoreWord[]
+  coreWords?: (string | AiCoreWord)[];
+}
+
+export interface AiMessagesResult {
+  code: number
+  message: string
+  data: AiChatMessage[]
+}
+
+export interface SendMessageResult {
+  code: number
+  message: string
+  data: AiStructuredContent // 👈 核心修改：对齐最新的 POST 响应 data 结构
+}
+
+// 【请求参数】
+export class SendAiMessageRequest {
+  sessionKey: string
+  content: string
+  constructor(sessionKey: string, content: string) {
+    this.sessionKey = sessionKey
+    this.content = content
+  }
+}
+
+// ======================== AI 模块接口实现 ========================
+
+export async function getAiMessages(sessionKey: string, take: number = 20): Promise<AiChatMessage[]> {
+  const res: AxiosResponse<AiMessagesResult> = await instance.get<AiMessagesResult, AxiosResponse<AiMessagesResult>>(
+    `/ai/sessions/${sessionKey}/messages`,
+    { params: { "take": take } }
+  )
+  if (res.data.code !== 200) throw new Error(res.data.message)
+  return res.data.data ?? []
+}
+
+export async function sendAiMessage(sessionKey: string, content: string): Promise<AiStructuredContent> {
+  const payload = new SendAiMessageRequest(sessionKey, content)
+  const res: AxiosResponse<SendMessageResult> = await instance.post<SendMessageResult, AxiosResponse<SendMessageResult>>(
+    `/ai/sessions/${sessionKey}/messages`,
+    payload
+  )
+  if (res.data.code !== 200) throw new Error(res.data.message)
+  return res.data.data
+}

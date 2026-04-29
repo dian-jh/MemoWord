@@ -3,6 +3,7 @@ import { MinePage } from './MinePage';
 import { PracticePage } from './PracticePage';
 import { StudyIndexPage } from './StudyIndexPage';
 import{ StatisticsPage } from  './StatisticsPage'
+import{AIContent} from  './AIContent'
 
 @Entry
 @Component
@@ -33,11 +34,19 @@ struct Index {
 
       TabContent() {
         StatisticsPage()
-      }.tabBar(this.barBuilder(1, '圈子', $r('app.media.ic_circle'), $r('app.media.ic_circle_selected')))
+      }.tabBar(this.barBuilder(1, '统计', $r('app.media.ic_circle'), $r('app.media.ic_circle_selected')))
+
+      TabContent() {
+        AIContent()
+      }.tabBar(this.barBuilder(2, 'AI助手', $r('app.media.ic_ai'), $r('app.media.ic_ai_selected')))
 
       TabContent() {
         MinePage()
-      }.tabBar(this.barBuilder(2, '我的', $r('app.media.ic_mine'), $r('app.media.ic_mine_selected')))
+      }.tabBar(this.barBuilder(3, '我的', $r('app.media.ic_mine'), $r('app.media.ic_mine_selected')))
+
+
+
+
     }.barPosition(BarPosition.End)
     .onChange((index) => {
       this.currentTabIndex = index;
