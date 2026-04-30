@@ -21,17 +21,6 @@
         <jjwt.version>0.11.5</jjwt.version>
     </properties>
 
-    <!-- 加入 Spring 官方仓库，解决 Spring AI 下载不到 -->
-    <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
 
     <dependencies>
@@ -140,15 +129,6 @@
 
 
 
-<!--        spring ai 依赖包-->
-
-
-        <!-- Spring AI（流式输出 + 函数调用） -->
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
-            <version>1.0.0-M1</version>
-        </dependency>
 
 
 
