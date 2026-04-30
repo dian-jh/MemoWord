@@ -7,6 +7,19 @@ import { PracticePage } from './PracticePage';
 struct Index {
   @StorageLink('currentTabIndex') currentTabIndex: number = 0;
 
+  // Index.ets (主页)
+  aboutToAppear() {
+    // ✅ 必须有这一步初始化，否则 MinePage 连不到信号
+    AppStorage.setOrCreate('needRefreshMine', 0);
+  }
+
+  onPageShow() {
+    const signal = Date.now();
+    console.info("Index: 发送刷新信号 -> " + signal);
+    AppStorage.setOrCreate('needRefreshMine', signal);
+  }
+
+
   build() {
     Tabs({ index: this.currentTabIndex }) {
       TabContent() {

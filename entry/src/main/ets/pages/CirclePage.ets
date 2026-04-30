@@ -8,6 +8,8 @@ import { promptAction } from "@kit.ArkUI";
 import emitter from "@ohos.events.emitter";
 
 
+
+
 interface dataList {
   records: PostBean[];
   total: number;
