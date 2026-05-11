@@ -1,10 +1,11 @@
-using System.Security.Claims;
 using AiService.Domain;
 using AiService.Domain.Entities;
 using AiService.WebAPI.Common;
 using AiService.WebAPI.DTO;
 using AiService.WebAPI.Settings;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace AiService.WebAPI.Controllers;
 

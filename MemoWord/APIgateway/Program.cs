@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Yarp.ReverseProxy.Transforms;
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Services.AddServiceDiscovery();
+builder.Services.AddDataProtection().UseEphemeralDataProtectionProvider();
 
 builder.Services.AddCors(options =>
 {
