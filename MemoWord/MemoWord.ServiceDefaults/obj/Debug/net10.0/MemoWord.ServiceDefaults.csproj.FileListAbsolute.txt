@@ -1,12 +1,12 @@
-E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\bin\Debug\net10.0\MemoWord.ServiceDefaults.deps.json
-E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\bin\Debug\net10.0\MemoWord.ServiceDefaults.dll
-E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\bin\Debug\net10.0\MemoWord.ServiceDefaults.pdb
 E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\obj\Debug\net10.0\MemoWord.ServiceDefaults.csproj.AssemblyReference.cache
 E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\obj\Debug\net10.0\MemoWord.ServiceDefaults.GeneratedMSBuildEditorConfig.editorconfig
 E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\obj\Debug\net10.0\MemoWord.ServiceDefaults.AssemblyInfoInputs.cache
 E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\obj\Debug\net10.0\MemoWord.ServiceDefaults.AssemblyInfo.cs
 E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\obj\Debug\net10.0\MemoWord.ServiceDefaults.csproj.CoreCompileInputs.cache
 E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\obj\Debug\net10.0\MemoWord.ServiceDefaults.sourcelink.json
+E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\bin\Debug\net10.0\MemoWord.ServiceDefaults.deps.json
+E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\bin\Debug\net10.0\MemoWord.ServiceDefaults.dll
+E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\bin\Debug\net10.0\MemoWord.ServiceDefaults.pdb
 E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\obj\Debug\net10.0\MemoWord.ServiceDefaults.dll
 E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\obj\Debug\net10.0\refint\MemoWord.ServiceDefaults.dll
 E:\CSharp\vs2026\code\MemoWord\MemoWord\MemoWord.ServiceDefaults\obj\Debug\net10.0\MemoWord.ServiceDefaults.pdb

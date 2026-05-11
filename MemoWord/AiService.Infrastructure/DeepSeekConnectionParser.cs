@@ -2,7 +2,7 @@ namespace AiService.Infrastructure;
 
 public static class DeepSeekConnectionParser
 {
-    public static DeepSeekOptions Parse(string deepSeekConnectionString, string model, double temperature)
+    public static DeepSeekOptions Parse(string deepSeekConnectionString)
     {
         if (string.IsNullOrWhiteSpace(deepSeekConnectionString))
         {
@@ -46,9 +46,7 @@ public static class DeepSeekConnectionParser
         return new DeepSeekOptions
         {
             Endpoint = endpoint.Trim(),
-            ApiKey = apiKey.Trim(),
-            Model = string.IsNullOrWhiteSpace(model) ? "deepseek-chat" : model.Trim(),
-            Temperature = temperature
+            ApiKey = apiKey.Trim()
         };
     }
 }

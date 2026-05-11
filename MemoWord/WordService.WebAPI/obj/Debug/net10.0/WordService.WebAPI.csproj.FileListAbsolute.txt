@@ -1,3 +1,11 @@
+E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.csproj.AssemblyReference.cache
+E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\rpswa.dswa.cache.json
+E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.GeneratedMSBuildEditorConfig.editorconfig
+E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.AssemblyInfoInputs.cache
+E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.AssemblyInfo.cs
+E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.csproj.CoreCompileInputs.cache
+E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.MvcApplicationPartsAssemblyInfo.cache
+E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.sourcelink.json
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\appsettings.Development.json
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\appsettings.json
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\WordService.WebAPI.staticwebassets.endpoints.json
@@ -6,6 +14,8 @@ E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\Wor
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\WordService.WebAPI.runtimeconfig.json
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\WordService.WebAPI.dll
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\WordService.WebAPI.pdb
+E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\Elastic.Clients.Elasticsearch.dll
+E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\Elastic.Transport.dll
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.dll
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.Abstractions.dll
@@ -42,15 +52,7 @@ E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\Wor
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\MemoWord.ServiceDefaults.pdb
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\WordService.Infrastructure.pdb
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\WordService.Domain.pdb
-E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.csproj.AssemblyReference.cache
-E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\rpswa.dswa.cache.json
-E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.GeneratedMSBuildEditorConfig.editorconfig
-E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.AssemblyInfoInputs.cache
-E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.AssemblyInfo.cs
-E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.csproj.CoreCompileInputs.cache
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.MvcApplicationPartsAssemblyInfo.cs
-E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.MvcApplicationPartsAssemblyInfo.cache
-E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.sourcelink.json
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\rjimswa.dswa.cache.json
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
@@ -66,6 +68,3 @@ E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\ref
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.pdb
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\WordService.WebAPI.genruntimeconfig.cache
 E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\ref\WordService.WebAPI.dll
-E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
-E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\Elastic.Clients.Elasticsearch.dll
-E:\CSharp\vs2026\code\MemoWord\MemoWord\WordService.WebAPI\bin\Debug\net10.0\Elastic.Transport.dll

@@ -1,21 +1,22 @@
 using AiService.Domain.Entities;
 using AiService.Domain.Models;
+using Microsoft.Extensions.AI;
 
 namespace AiService.Domain;
 
 public class AiChatDomainService
 {
     private readonly IAiChatRepository _aiChatRepository;
-    private readonly IAiCompletionProvider _aiCompletionProvider;
+    private readonly IChatClient _chatClient;
     private readonly IAiWordLookupRepository _aiWordLookupRepository;
 
     public AiChatDomainService(
         IAiChatRepository aiChatRepository,
-        IAiCompletionProvider aiCompletionProvider,
+        IChatClient chatClient,
         IAiWordLookupRepository aiWordLookupRepository)
     {
         _aiChatRepository = aiChatRepository;
-        _aiCompletionProvider = aiCompletionProvider;
+        _chatClient = chatClient;
         _aiWordLookupRepository = aiWordLookupRepository;
     }
 
@@ -46,30 +47,28 @@ public class AiChatDomainService
         var safeHistoryLimit = Math.Clamp(historyLimit, 1, 200);
         var history = await _aiChatRepository.GetMessagesBySessionIdAsync(session.Id, safeHistoryLimit, cancellationToken);
 
-        var promptMessages = new List<AiChatPromptMessage>(history.Count + 2);
+        var promptMessages = new List<ChatMessage>(history.Count + 2);
         if (!string.IsNullOrWhiteSpace(systemPrompt))
         {
-            promptMessages.Add(new AiChatPromptMessage
-            {
-                Role = AiChatRoles.System,
-                Content = systemPrompt.Trim()
-            });
+            promptMessages.Add(new ChatMessage(ChatRole.System, systemPrompt.Trim()));
         }
 
-        promptMessages.AddRange(history.Select(x => new AiChatPromptMessage
-        {
-            Role = x.Role,
-            Content = x.Content
-        }));
+        promptMessages.AddRange(history.Select(ToChatMessage));
 
-        promptMessages.Add(new AiChatPromptMessage
-        {
-            Role = AiChatRoles.User,
-            Content = normalizedContent
-        });
+        promptMessages.Add(new ChatMessage(ChatRole.User, normalizedContent));
 
-        var assistantContent = await _aiCompletionProvider.GetCompletionAsync(promptMessages, cancellationToken);
-        var structuredOutput = AiStructuredOutputParser.Parse(assistantContent);
+        var structuredResponse = await _chatClient.GetResponseAsync<AiStructuredOutput>(promptMessages, cancellationToken: cancellationToken);
+        if (!structuredResponse.TryGetResult(out var structuredOutput) || structuredOutput is null)
+        {
+            throw new InvalidOperationException("AI structured output is invalid or empty.");
+        }
+
+        var assistantContent = structuredResponse.Text?.Trim();
+        if (string.IsNullOrWhiteSpace(assistantContent))
+        {
+            assistantContent = BuildFallbackRawContent(structuredOutput);
+        }
+
         var coreWords = await ResolveCoreWordsAsync(structuredOutput.CoreWords, cancellationToken);
 
         var userMessage = AiChatMessage.CreateUserMessage(session.Id, userId, normalizedContent);
@@ -93,6 +92,38 @@ public class AiChatDomainService
             Analysis = structuredOutput.Analysis,
             CoreWords = coreWords
         };
+    }
+
+    private static ChatMessage ToChatMessage(AiChatMessage message)
+    {
+        var role = message.Role switch
+        {
+            AiChatRoles.System => ChatRole.System,
+            AiChatRoles.Assistant => ChatRole.Assistant,
+            _ => ChatRole.User
+        };
+
+        return new ChatMessage(role, message.Content);
+    }
+
+    private static string BuildFallbackRawContent(AiStructuredOutput structuredOutput)
+    {
+        return $$"""
+                 {
+                   "translation": "{{EscapeJson(structuredOutput.Translation)}}",
+                   "analysis": "{{EscapeJson(structuredOutput.Analysis)}}",
+                   "coreWords": [{{string.Join(", ", structuredOutput.CoreWords.Select(x => $"\"{EscapeJson(x)}\""))}}]
+                 }
+                 """;
+    }
+
+    private static string EscapeJson(string value)
+    {
+        return value
+            .Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("\"", "\\\"", StringComparison.Ordinal)
+            .Replace("\r", "\\r", StringComparison.Ordinal)
+            .Replace("\n", "\\n", StringComparison.Ordinal);
     }
 
     public async Task<List<AiChatMessage>> GetMessagesAsync(
