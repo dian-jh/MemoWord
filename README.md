@@ -2,35 +2,32 @@
 
 鸿蒙平台的背单词APP
 
-![](docs/images/1.png)
+### 项目展示
 
-![](docs/images/2.png)
+<div align="center">
+<img src="docs/images/1.png" width="32%" /><img src="docs/images/2.png" width="32%" /><img src="docs/images/3.png" width="32%" />
 
-![](docs/images/3.png)
+</div>
 
-![](docs/images/4.png)
+<div align="center">
+<img src="docs/images/4.png" width="32%" /><img src="docs/images/5.png" width="32%" /><img src="docs/images/6.png" width="32%" />
 
-![](docs/images/5.png)
+</div>
 
-![](docs/images/6.png)
+<div align="center">
+<img src="docs/images/7.png" width="32%" /><img src="docs/images/8.png" width="32%" /><img src="docs/images/9.png" width="32%" />
 
-![](docs/images/7.png)
+</div>
 
-![](docs/images/7.png)
+<div align="center">
+<img src="docs/images/10.png" width="32%" /><img src="docs/images/11.png" width="32%" /><img src="docs/images/12.png" width="32%" />
 
-![](docs/images/9.png)
+</div>
 
-![](docs/images/10.png)
+<div align="center">
+<img src="docs/images/13.png" width="32%" /><img src="docs/images/14.png" width="32%" /><img src="docs/images/15.png" width="32%" />
 
-![](docs/images/11.png)
-
-![](docs/images/12.png)
-
-![](docs/images/13.png)
-
-![](docs/images/14.png)
-
-![](docs/images/15.png)
+</div>
 
 ## ✨ 主要功能
 
